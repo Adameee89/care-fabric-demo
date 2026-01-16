@@ -14,6 +14,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { 
   getPatientAppointments, 
   getPatientPrescriptions, 
@@ -53,7 +54,8 @@ const Dashboard = () => {
             </div>
             <span className="text-xl font-display font-bold">MediConnect</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
             <button className="relative p-2 rounded-lg hover:bg-muted">
               <Bell className="w-5 h-5" />
               {unreadNotifications.length > 0 && (
