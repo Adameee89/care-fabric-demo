@@ -8,11 +8,9 @@ import {
   Sparkles,
   AlertTriangle,
   Heart,
-  Paperclip,
-  X,
-  FileText,
   Info,
-  ArrowLeft
+  ArrowLeft,
+  User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,7 +25,8 @@ import {
 } from '@/components/ui/select';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { sendAIMessage, specializationOptions, AISpecialization } from '@/services/aiHealthcareApi';
+import { sendAIMessage, specializationOptions, AISpecialization, AIChatResponse } from '@/services/aiHealthcareApi';
+import AIResponseCard from '@/components/ai-assistant/AIResponseCard';
 
 interface Message {
   id: string;
@@ -35,7 +34,7 @@ interface Message {
   content: string;
   timestamp: Date;
   isTyping?: boolean;
-  disclaimer?: string;
+  aiResponse?: AIChatResponse;
 }
 
 const AIAssistantPublic = () => {
@@ -97,7 +96,7 @@ const AIAssistantPublic = () => {
       
       setMessages(prev => prev.map(msg => 
         msg.id === typingId 
-          ? { ...msg, content: response.response, disclaimer: response.disclaimer, isTyping: false }
+          ? { ...msg, content: response.response.message, aiResponse: response, isTyping: false }
           : msg
       ));
     } catch (error) {
@@ -269,7 +268,7 @@ const AIAssistantPublic = () => {
         
         {/* Messages */}
         <ScrollArea className="flex-1 p-4 lg:p-6" ref={scrollRef}>
-          <div className="max-w-3xl mx-auto space-y-4">
+          <div className="max-w-3xl mx-auto space-y-6">
             {messages.length <= 1 ? (
               // Empty state with suggestions
               <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -323,6 +322,9 @@ const AIAssistantPublic = () => {
                           {formatTime(message.timestamp)}
                         </p>
                       </div>
+                      <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center shrink-0">
+                        <User className="w-4 h-4 text-secondary" />
+                      </div>
                     </div>
                   ) : message.isTyping ? (
                     <div className="flex gap-3 items-start">
@@ -332,6 +334,7 @@ const AIAssistantPublic = () => {
                       <div className="flex-1 space-y-2 py-2">
                         <Skeleton className="h-4 w-3/4" />
                         <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-20 w-full" />
                         <div className="flex gap-1 pt-1">
                           <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                           <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -344,17 +347,19 @@ const AIAssistantPublic = () => {
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <Bot className="w-4 h-4 text-primary" />
                       </div>
-                      <div className="flex-1 max-w-[85%]">
-                        <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3">
-                          <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                        </div>
-                        {message.disclaimer && (
-                          <div className="mt-2 flex items-start gap-2 px-2">
-                            <AlertTriangle className="w-3 h-3 text-warning shrink-0 mt-0.5" />
-                            <p className="text-xs text-muted-foreground">{message.disclaimer}</p>
+                      <div className="flex-1">
+                        {message.aiResponse ? (
+                          <AIResponseCard 
+                            response={message.aiResponse.response}
+                            metadata={message.aiResponse.metadata}
+                            disclaimer={message.aiResponse.disclaimer}
+                          />
+                        ) : (
+                          <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3">
+                            <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                           </div>
                         )}
-                        <p className="text-xs text-muted-foreground mt-1 px-2">
+                        <p className="text-xs text-muted-foreground mt-2">
                           {formatTime(message.timestamp)}
                         </p>
                       </div>

@@ -1,10 +1,10 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bot, User, AlertTriangle, FileText, Image, RefreshCw, AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Bot, User, AlertTriangle, FileText, RefreshCw, AlertCircle } from 'lucide-react';
 import { ChatMessage as ChatMessageType } from '@/contexts/AIChatContext';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import AIResponseCard from './AIResponseCard';
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -15,7 +15,6 @@ const ChatMessage = memo(({ message, onRetry }: ChatMessageProps) => {
   const { t } = useTranslation();
   
   const isUser = message.type === 'user';
-  const isAI = message.type === 'ai';
   const isSystem = message.type === 'system';
   const isError = message.type === 'error';
   const isFile = message.type === 'file';
@@ -38,6 +37,7 @@ const ChatMessage = memo(({ message, onRetry }: ChatMessageProps) => {
         <div className="flex-1 space-y-2 py-2">
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-20 w-full" />
           <div className="flex gap-1 pt-1">
             <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
             <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -151,43 +151,31 @@ const ChatMessage = memo(({ message, onRetry }: ChatMessageProps) => {
     );
   }
   
-  // AI message
+  // AI message with rich response
   return (
     <div className="flex gap-3 items-start">
       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
         <Bot className="w-4 h-4 text-primary" />
       </div>
-      <div className="flex-1 max-w-[85%]">
-        <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3">
-          <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
-          
-          {/* Confidence indicator */}
-          {message.confidence !== undefined && (
-            <div className="mt-3 flex items-center gap-2">
-              <div className="h-1.5 flex-1 bg-muted-foreground/20 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary rounded-full transition-all"
-                  style={{ width: `${message.confidence * 100}%` }}
-                />
+      <div className="flex-1">
+        {message.aiResponse ? (
+          <AIResponseCard 
+            response={message.aiResponse.response}
+            metadata={message.aiResponse.metadata}
+            disclaimer={message.aiResponse.disclaimer}
+          />
+        ) : (
+          <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3">
+            <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+            {message.disclaimer && (
+              <div className="mt-3 flex items-start gap-2">
+                <AlertTriangle className="w-3 h-3 text-warning shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground">{message.disclaimer}</p>
               </div>
-              <span className="text-xs text-muted-foreground">
-                {Math.round(message.confidence * 100)}%
-              </span>
-            </div>
-          )}
-        </div>
-        
-        {/* Disclaimer */}
-        {message.disclaimer && (
-          <div className="mt-2 flex items-start gap-2 px-2">
-            <AlertTriangle className="w-3 h-3 text-warning shrink-0 mt-0.5" />
-            <p className="text-xs text-muted-foreground">
-              {message.disclaimer}
-            </p>
+            )}
           </div>
         )}
-        
-        <p className="text-xs text-muted-foreground mt-1 px-2">
+        <p className="text-xs text-muted-foreground mt-2">
           {formatTime(message.timestamp)}
         </p>
       </div>
