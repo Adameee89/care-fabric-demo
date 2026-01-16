@@ -1,51 +1,40 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  Calendar, 
-  FileText, 
-  Pill, 
-  MessageSquare, 
-  Bell,
-  ChevronRight,
-  Clock,
-  Heart,
-  Activity,
-  TrendingUp
-} from 'lucide-react';
+import { useAppointments } from '@/contexts/AppointmentContext';
+import { Calendar, FileText, Pill, MessageSquare, Bell, ChevronRight, Clock, Heart, Activity, TrendingUp, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { 
-  getPatientAppointments, 
-  getPatientPrescriptions, 
-  getPatientLabResults,
-  notifications,
-  patients
-} from '@/data/mockData';
+import { BookAppointmentForm } from '@/components/appointments/BookAppointmentForm';
+import { PatientAppointmentList } from '@/components/appointments/PatientAppointmentList';
+import { DoctorAppointmentInbox } from '@/components/appointments/DoctorAppointmentInbox';
+import { getPatientPrescriptions, getPatientLabResults, notifications, patients, doctors } from '@/data/mockData';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const { getUpcomingForPatient, getPendingForDoctor, getStatusStats } = useAppointments();
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
+    if (!isAuthenticated) navigate('/login');
   }, [isAuthenticated, navigate]);
 
   if (!user) return null;
 
   const patient = patients.find(p => p.id === 'pat_042')!;
-  const appointments = getPatientAppointments(patient.id);
+  const doctor = doctors.find(d => d.id === 'doc_001')!;
   const prescriptions = getPatientPrescriptions(patient.id);
   const labResults = getPatientLabResults(patient.id);
-  const upcomingAppointment = appointments.find(a => a.status === 'Scheduled' || a.status === 'Confirmed');
   const activePrescriptions = prescriptions.filter(p => p.status === 'Active');
   const unreadNotifications = notifications.filter(n => !n.isRead);
+  
+  const upcomingAppointments = user.role === 'patient' ? getUpcomingForPatient(patient.id) : [];
+  const pendingRequests = user.role === 'doctor' ? getPendingForDoctor(doctor.id) : [];
+  const stats = getStatusStats();
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -66,10 +55,10 @@ const Dashboard = () => {
             </button>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-medium text-primary">
-                {patient.firstName[0]}{patient.lastName[0]}
+                {user.firstName[0]}{user.lastName[0]}
               </div>
               <div className="hidden md:block">
-                <p className="text-sm font-medium">{patient.firstName} {patient.lastName}</p>
+                <p className="text-sm font-medium">{user.firstName} {user.lastName}</p>
                 <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
               </div>
             </div>
@@ -78,14 +67,23 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">
-            Welcome back, {patient.firstName}!
-          </h1>
-          <p className="text-muted-foreground">Here's your health overview for today.</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">
+              {user.role === 'patient' ? `Welcome back, ${patient.firstName}!` : 
+               user.role === 'doctor' ? `Hello, Dr. ${doctor.lastName}` : 'Admin Dashboard'}
+            </h1>
+            <p className="text-muted-foreground">
+              {user.role === 'patient' ? "Here's your health overview." : 
+               user.role === 'doctor' ? `You have ${pendingRequests.length} pending requests` : 'System overview'}
+            </p>
+          </div>
+          {user.role === 'patient' && (
+            <Button variant="hero" onClick={() => setBookingOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" /> Book Appointment
+            </Button>
+          )}
         </div>
 
         {/* Stats Grid */}
@@ -96,8 +94,8 @@ const Dashboard = () => {
                 <Calendar className="w-5 h-5 text-primary" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{appointments.filter(a => a.status !== 'Cancelled').length}</p>
-            <p className="text-sm text-muted-foreground">Total Appointments</p>
+            <p className="text-2xl font-bold">{user.role === 'patient' ? upcomingAppointments.length : pendingRequests.length}</p>
+            <p className="text-sm text-muted-foreground">{user.role === 'patient' ? 'Upcoming' : 'Pending Requests'}</p>
           </div>
           <div className="glass-card rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
@@ -105,8 +103,8 @@ const Dashboard = () => {
                 <Pill className="w-5 h-5 text-success" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{activePrescriptions.length}</p>
-            <p className="text-sm text-muted-foreground">Active Prescriptions</p>
+            <p className="text-2xl font-bold">{user.role === 'admin' ? stats.Completed || 0 : activePrescriptions.length}</p>
+            <p className="text-sm text-muted-foreground">{user.role === 'admin' ? 'Completed' : 'Active Prescriptions'}</p>
           </div>
           <div className="glass-card rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
@@ -114,8 +112,8 @@ const Dashboard = () => {
                 <FileText className="w-5 h-5 text-info" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{labResults.length}</p>
-            <p className="text-sm text-muted-foreground">Lab Results</p>
+            <p className="text-2xl font-bold">{user.role === 'admin' ? stats.Accepted || 0 : labResults.length}</p>
+            <p className="text-sm text-muted-foreground">{user.role === 'admin' ? 'Accepted' : 'Lab Results'}</p>
           </div>
           <div className="glass-card rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
@@ -123,72 +121,42 @@ const Dashboard = () => {
                 <Activity className="w-5 h-5 text-secondary" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{patient.conditions.length}</p>
-            <p className="text-sm text-muted-foreground">Active Conditions</p>
+            <p className="text-2xl font-bold">{user.role === 'admin' ? stats.Declined || 0 : patient.conditions.length}</p>
+            <p className="text-sm text-muted-foreground">{user.role === 'admin' ? 'Declined' : 'Active Conditions'}</p>
           </div>
         </div>
 
-        {/* Main Grid */}
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Upcoming Appointment */}
-          <div className="lg:col-span-2 glass-card rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold">Upcoming Appointment</h2>
-              <Button variant="ghost" size="sm">View All <ChevronRight className="w-4 h-4" /></Button>
-            </div>
-            {upcomingAppointment ? (
-              <div className="flex items-start gap-4 p-4 bg-accent/30 rounded-xl border border-primary/10">
-                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-primary" />
+        {/* Role-specific Content */}
+        <div className="glass-card rounded-2xl p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            {user.role === 'patient' ? 'My Appointments' : 
+             user.role === 'doctor' ? 'Appointment Inbox' : 'All Appointments Overview'}
+          </h2>
+          
+          {user.role === 'patient' && <PatientAppointmentList patientId={patient.id} />}
+          {user.role === 'doctor' && <DoctorAppointmentInbox doctorId={doctor.id} />}
+          {user.role === 'admin' && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {Object.entries(stats).map(([status, count]) => (
+                <div key={status} className="p-4 rounded-lg bg-muted/50 text-center">
+                  <p className="text-2xl font-bold">{count}</p>
+                  <p className="text-sm text-muted-foreground">{status}</p>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold">{upcomingAppointment.doctorName}</h3>
-                    <span className="px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium">
-                      {upcomingAppointment.status}
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">{upcomingAppointment.type} • {upcomingAppointment.reason}</p>
-                  <p className="text-sm font-medium">{upcomingAppointment.date} at {upcomingAppointment.time}</p>
-                </div>
-                <Button variant="hero" size="sm">Join Call</Button>
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No upcoming appointments</p>
-                <Button variant="outline" size="sm" className="mt-3">Schedule Now</Button>
-              </div>
-            )}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="glass-card rounded-2xl p-6">
-            <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-            <div className="space-y-3">
-              <Button variant="outline" className="w-full justify-start gap-3">
-                <Calendar className="w-5 h-5 text-primary" /> Book Appointment
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-3">
-                <MessageSquare className="w-5 h-5 text-info" /> Message Doctor
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-3">
-                <Pill className="w-5 h-5 text-success" /> Refill Prescription
-              </Button>
-              <Button variant="outline" className="w-full justify-start gap-3">
-                <TrendingUp className="w-5 h-5 text-secondary" /> View Health Trends
-              </Button>
+              ))}
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Demo Notice */}
         <div className="mt-8 p-4 rounded-xl bg-warning/10 border border-warning/20 text-center">
           <p className="text-sm text-warning">
-            <strong>Demo Mode:</strong> This is a demonstration with simulated data. No real medical information is shown.
+            <strong>Demo Mode:</strong> This is a demonstration with simulated data.
           </p>
         </div>
       </main>
+
+      {user.role === 'patient' && (
+        <BookAppointmentForm patientId={patient.id} open={bookingOpen} onOpenChange={setBookingOpen} />
+      )}
     </div>
   );
 };
