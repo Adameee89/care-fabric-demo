@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AIAssistant from "./pages/AIAssistant";
 import AIAssistantLanding from "./pages/AIAssistantLanding";
+import AIAssistantPublic from "./pages/AIAssistantPublic";
 import Features from "./pages/Features";
 import ForDoctors from "./pages/ForDoctors";
 import ForPatients from "./pages/ForPatients";
@@ -37,7 +38,7 @@ const App = () => (
                   <Route path="/login" element={<Login />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/ai-assistant" element={<AIAssistant />} />
-                  <Route path="/ai" element={<AIAssistantLanding />} />
+                  <Route path="/ai" element={<AIAssistantPublic />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/for-doctors" element={<ForDoctors />} />
                   <Route path="/for-patients" element={<ForPatients />} />
