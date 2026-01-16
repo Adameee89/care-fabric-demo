@@ -19,6 +19,7 @@ const Navbar = () => {
     { label: 'For Doctors', href: '/for-doctors' },
     { label: 'For Patients', href: '/for-patients' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'AI Assistant', href: '/ai' },
   ];
 
   return (
