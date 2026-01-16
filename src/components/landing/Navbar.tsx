@@ -15,10 +15,10 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const navLinks = [
-    { label: 'Features', href: '#features' },
-    { label: 'For Doctors', href: '#doctors' },
-    { label: 'For Patients', href: '#patients' },
-    { label: 'Pricing', href: '#pricing' },
+    { label: 'Features', href: '/features' },
+    { label: 'For Doctors', href: '/for-doctors' },
+    { label: 'For Patients', href: '/for-patients' },
+    { label: 'Pricing', href: '/pricing' },
   ];
 
   return (
@@ -38,13 +38,13 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
+                to={link.href}
                 className="text-muted-foreground hover:text-foreground transition-colors font-medium"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -91,14 +91,14 @@ const Navbar = () => {
         <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border animate-slide-in-up">
           <div className="container mx-auto px-4 py-6 space-y-4">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
+                to={link.href}
                 className="block text-muted-foreground hover:text-foreground transition-colors font-medium py-2"
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
             <div className="pt-4 border-t border-border space-y-3">
               <Button variant="outline" className="w-full" onClick={() => navigate('/login')}>
