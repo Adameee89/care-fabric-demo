@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Bot, 
   Send, 
@@ -14,12 +14,17 @@ import {
   Paperclip,
   X,
   FileText,
-  RefreshCw
+  RefreshCw,
+  Lock,
+  Zap,
+  Crown,
+  Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
@@ -27,6 +32,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { sendAIMessage, specializationOptions, AISpecialization, AIChatResponse } from '@/services/aiHealthcareApi';
@@ -49,6 +61,44 @@ interface UploadedFile {
   size: number;
   preview?: string;
 }
+
+interface DailyUsage {
+  date: string;
+  count: number;
+}
+
+const DAILY_LIMIT = 10;
+const STORAGE_KEY = 'mediconnect_ai_usage';
+
+// Get today's date as string
+const getTodayString = () => new Date().toISOString().split('T')[0];
+
+// Load usage from localStorage
+const loadUsage = (): DailyUsage => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const usage = JSON.parse(stored) as DailyUsage;
+      // Reset if different day
+      if (usage.date !== getTodayString()) {
+        return { date: getTodayString(), count: 0 };
+      }
+      return usage;
+    }
+  } catch (e) {
+    console.error('Error loading usage:', e);
+  }
+  return { date: getTodayString(), count: 0 };
+};
+
+// Save usage to localStorage
+const saveUsage = (usage: DailyUsage) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(usage));
+  } catch (e) {
+    console.error('Error saving usage:', e);
+  }
+};
 
 // All available questions for each topic
 const allTopicQuestions: Record<string, string[]> = {
@@ -106,6 +156,7 @@ const topicKeys = ['symptoms', 'medications', 'nutrition', 'exercise', 'sleep', 
 
 const AIAssistantPublic = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -114,8 +165,13 @@ const AIAssistantPublic = () => {
   const [topicIndices, setTopicIndices] = useState<Record<string, number>>(() => 
     Object.fromEntries(topicKeys.map(key => [key, 0]))
   );
+  const [usage, setUsage] = useState<DailyUsage>(loadUsage);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const remainingQuestions = DAILY_LIMIT - usage.count;
+  const isLimitReached = remainingQuestions <= 0;
   
   // Auto-scroll to bottom
   useEffect(() => {
@@ -195,6 +251,12 @@ const AIAssistantPublic = () => {
   const handleSend = async () => {
     if ((!input.trim() && uploadedFiles.length === 0) || isLoading) return;
     
+    // Check daily limit
+    if (isLimitReached) {
+      setShowUpgradeModal(true);
+      return;
+    }
+    
     const userMessage: Message = {
       id: `user_${Date.now()}`,
       type: 'user',
@@ -216,6 +278,11 @@ const AIAssistantPublic = () => {
     setInput('');
     setUploadedFiles([]);
     setIsLoading(true);
+    
+    // Increment usage count
+    const newUsage = { date: getTodayString(), count: usage.count + 1 };
+    setUsage(newUsage);
+    saveUsage(newUsage);
     
     try {
       // Build message with file context
@@ -362,6 +429,42 @@ const AIAssistantPublic = () => {
               </div>
             ))}
           </div>
+        </div>
+        
+        {/* Usage Limit Indicator */}
+        <div className="p-4 border-t border-border">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">{t('ai.dailyQuestions', 'Daily Questions')}</span>
+              <span className={remainingQuestions <= 3 ? 'text-warning font-medium' : 'text-muted-foreground'}>
+                {usage.count}/{DAILY_LIMIT}
+              </span>
+            </div>
+            <Progress 
+              value={(usage.count / DAILY_LIMIT) * 100} 
+              className={`h-2 ${isLimitReached ? '[&>div]:bg-destructive' : remainingQuestions <= 3 ? '[&>div]:bg-warning' : ''}`}
+            />
+            {isLimitReached ? (
+              <p className="text-xs text-destructive font-medium">
+                {t('ai.limitReached', 'Daily limit reached. Upgrade for unlimited access!')}
+              </p>
+            ) : remainingQuestions <= 3 ? (
+              <p className="text-xs text-warning">
+                {t('ai.almostLimit', `${remainingQuestions} questions remaining today`)}
+              </p>
+            ) : null}
+          </div>
+          
+          {/* Upgrade CTA */}
+          <Button 
+            variant="hero" 
+            size="sm" 
+            className="w-full mt-3 gap-2"
+            onClick={() => setShowUpgradeModal(true)}
+          >
+            <Crown className="w-4 h-4" />
+            {t('ai.upgradeNow', 'Upgrade for Unlimited')}
+          </Button>
         </div>
         
         {/* Disclaimer */}
@@ -589,6 +692,25 @@ const AIAssistantPublic = () => {
               </div>
             )}
             
+            {/* Limit reached overlay */}
+            {isLimitReached && (
+              <div 
+                className="mb-3 p-4 bg-destructive/10 border border-destructive/20 rounded-xl cursor-pointer hover:bg-destructive/15 transition-colors"
+                onClick={() => setShowUpgradeModal(true)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-destructive/20 flex items-center justify-center shrink-0">
+                    <Lock className="w-5 h-5 text-destructive" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-destructive">{t('ai.limitReachedShort', 'Daily limit reached')}</p>
+                    <p className="text-sm text-muted-foreground">{t('ai.clickToUpgrade', 'Click here to upgrade for unlimited access')}</p>
+                  </div>
+                  <Crown className="w-5 h-5 text-secondary" />
+                </div>
+              </div>
+            )}
+            
             <div className="flex items-end gap-2">
               {/* File upload button */}
               <Button
@@ -596,7 +718,7 @@ const AIAssistantPublic = () => {
                 size="icon"
                 className="shrink-0 h-12 w-12 text-muted-foreground hover:text-foreground"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isLoading}
+                disabled={isLoading || isLimitReached}
               >
                 <Paperclip className="w-5 h-5" />
                 <span className="sr-only">{t('ai.attachFile', 'Attach file')}</span>
@@ -620,8 +742,11 @@ const AIAssistantPublic = () => {
                       handleSend();
                     }
                   }}
-                  placeholder={t('ai.inputPlaceholder', 'Ask a health-related question...')}
-                  disabled={isLoading}
+                  placeholder={isLimitReached 
+                    ? t('ai.limitPlaceholder', 'Upgrade to continue chatting...')
+                    : t('ai.inputPlaceholder', 'Ask a health-related question...')
+                  }
+                  disabled={isLoading || isLimitReached}
                   className="min-h-[48px] max-h-[200px] resize-none py-3 pr-12"
                   rows={1}
                 />
@@ -629,19 +754,115 @@ const AIAssistantPublic = () => {
               <Button
                 size="icon"
                 className="shrink-0 h-12 w-12"
-                onClick={handleSend}
-                disabled={isLoading || (!input.trim() && uploadedFiles.length === 0)}
+                onClick={isLimitReached ? () => setShowUpgradeModal(true) : handleSend}
+                disabled={isLoading || (!isLimitReached && !input.trim() && uploadedFiles.length === 0)}
+                variant={isLimitReached ? 'hero' : 'default'}
               >
-                <Send className="w-5 h-5" />
-                <span className="sr-only">{t('ai.send', 'Send')}</span>
+                {isLimitReached ? <Crown className="w-5 h-5" /> : <Send className="w-5 h-5" />}
+                <span className="sr-only">{isLimitReached ? t('ai.upgrade', 'Upgrade') : t('ai.send', 'Send')}</span>
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              {t('ai.fileHint', 'Upload PDFs or images for OCR analysis • Enter to send')}
+              {isLimitReached 
+                ? t('ai.freeResets', 'Free tier resets at midnight UTC')
+                : `${remainingQuestions} ${t('ai.questionsRemaining', 'questions remaining today')} • ${t('ai.fileHint', 'Upload PDFs or images')}`
+              }
             </p>
           </div>
         </div>
       </main>
+      
+      {/* Upgrade Modal */}
+      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <div className="mx-auto w-16 h-16 rounded-2xl gradient-bg-hero flex items-center justify-center mb-4">
+              <Lock className="w-8 h-8 text-white" />
+            </div>
+            <DialogTitle className="text-center text-2xl">
+              {isLimitReached 
+                ? t('ai.limitReachedTitle', 'Daily Limit Reached')
+                : t('ai.upgradeTitle', 'Upgrade to Pro')
+              }
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {isLimitReached 
+                ? t('ai.limitReachedDesc', 'You\'ve used all 10 free questions for today. Upgrade to get unlimited access!')
+                : t('ai.upgradeDesc', 'Get unlimited AI health consultations and premium features.')
+              }
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Pro Plan Card */}
+            <div className="border-2 border-secondary rounded-xl p-4 bg-secondary/5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-secondary" />
+                  <span className="font-bold text-lg">{t('pricing.plans.pro.name', 'Professional')}</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-bold">$19</span>
+                  <span className="text-muted-foreground text-sm">/mo</span>
+                </div>
+              </div>
+              
+              <ul className="space-y-2 mb-4">
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary" />
+                  <span>{t('ai.proFeature1', 'Unlimited AI consultations')}</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary" />
+                  <span>{t('ai.proFeature2', 'All medical specializations')}</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary" />
+                  <span>{t('ai.proFeature3', 'Priority response times')}</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary" />
+                  <span>{t('ai.proFeature4', 'Advanced OCR document analysis')}</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm">
+                  <Check className="w-4 h-4 text-secondary" />
+                  <span>{t('ai.proFeature5', 'Chat history & export')}</span>
+                </li>
+              </ul>
+              
+              <Button 
+                variant="hero" 
+                className="w-full"
+                onClick={() => navigate('/pricing')}
+              >
+                {t('ai.startTrial', 'Start 14-Day Free Trial')}
+              </Button>
+            </div>
+            
+            {/* Reset timer */}
+            <p className="text-center text-sm text-muted-foreground">
+              {t('ai.resetInfo', 'Free tier resets daily at midnight UTC')}
+            </p>
+            
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setShowUpgradeModal(false)}
+              >
+                {t('ai.maybeLater', 'Maybe Later')}
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="flex-1"
+                onClick={() => navigate('/pricing')}
+              >
+                {t('ai.viewAllPlans', 'View All Plans')}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
