@@ -4,7 +4,8 @@ import {
   sendAIMessage, 
   AISpecialization, 
   getMedicalDisclaimer,
-  AIError 
+  AIError,
+  AIChatResponse
 } from '@/services/aiHealthcareApi';
 
 // Message types
@@ -13,11 +14,11 @@ export interface ChatMessage {
   type: 'user' | 'ai' | 'system' | 'error' | 'file';
   content: string;
   timestamp: Date;
-  confidence?: number;
   disclaimer?: string;
   file?: UploadedFile;
   isTyping?: boolean;
   error?: AIError;
+  aiResponse?: AIChatResponse;
 }
 
 export interface UploadedFile {
@@ -165,9 +166,9 @@ export const AIChatProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         msg.id === typingId 
           ? {
               ...msg,
-              content: response.response,
-              confidence: response.confidence,
+              content: response.response.message,
               disclaimer: response.disclaimer,
+              aiResponse: response,
               isTyping: false,
             }
           : msg

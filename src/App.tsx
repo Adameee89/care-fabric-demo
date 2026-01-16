@@ -13,7 +13,6 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import AIAssistant from "./pages/AIAssistant";
-import AIAssistantLanding from "./pages/AIAssistantLanding";
 import AIAssistantPublic from "./pages/AIAssistantPublic";
 import Features from "./pages/Features";
 import ForDoctors from "./pages/ForDoctors";

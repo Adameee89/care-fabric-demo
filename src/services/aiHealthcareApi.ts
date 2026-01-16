@@ -37,10 +37,26 @@ export const specializationOptions: AISpecializationOption[] = [
   { value: 'endocrinology', labelKey: 'ai.specializations.endocrinology', icon: '⚗️' },
 ];
 
-// Supported languages (mapped from i18n)
+// Supported languages
 export type AILanguage = 'en' | 'de' | 'fr' | 'es' | 'ar' | 'it' | 'pt' | 'nl' | 'pl' | 'ru' | 'zh' | 'ja' | 'ko' | 'hi';
 
-// Request/Response types
+// Rich response structure from API
+export interface AIResponseData {
+  message: string;
+  recommendations: string[];
+  warnings: string[];
+  references: string[];
+  followUp: string[];
+}
+
+export interface AIResponseMetadata {
+  specialization: string;
+  confidence: 'High' | 'Moderate' | 'Low';
+  requiresPhysicianConsult: boolean;
+  emergencyLevel: 'routine' | 'urgent' | 'emergency';
+  topRelatedSpecialties: string[];
+}
+
 export interface AIChatRequest {
   message: string;
   specialization: AISpecialization;
@@ -48,10 +64,9 @@ export interface AIChatRequest {
 }
 
 export interface AIChatResponse {
-  response: string;
-  confidence?: number;
-  sources?: string[];
-  disclaimer?: string;
+  response: AIResponseData;
+  metadata: AIResponseMetadata;
+  disclaimer: string;
 }
 
 export interface AIError {
@@ -68,7 +83,7 @@ export const mapLanguageToAPI = (lang: string): AILanguage => {
     fr: 'fr',
     es: 'es',
     ar: 'ar',
-    it: 'en', // Fallback to English
+    it: 'en',
     pt: 'en',
     nl: 'en',
     pl: 'en',
@@ -81,7 +96,7 @@ export const mapLanguageToAPI = (lang: string): AILanguage => {
   return languageMap[lang] || 'en';
 };
 
-// Medical disclaimer (always included)
+// Medical disclaimer
 export const getMedicalDisclaimer = (lang: string): string => {
   const disclaimers: Record<string, string> = {
     en: 'This is not a medical diagnosis. Please consult a licensed healthcare professional for proper medical advice.',
@@ -91,6 +106,32 @@ export const getMedicalDisclaimer = (lang: string): string => {
     ar: 'هذا ليس تشخيصًا طبيًا. يرجى استشارة أخصائي رعاية صحية مرخص للحصول على المشورة الطبية المناسبة.',
   };
   return disclaimers[lang] || disclaimers.en;
+};
+
+// Parse the rich API response
+const parseAPIResponse = (data: any, language: string): AIChatResponse => {
+  // Handle the nested structure
+  const result = data?.result || data;
+  const responseData = result?.response || {};
+  const metadata = result?.metadata || {};
+  
+  return {
+    response: {
+      message: responseData.message || (typeof data === 'string' ? data : 'No response available'),
+      recommendations: Array.isArray(responseData.recommendations) ? responseData.recommendations : [],
+      warnings: Array.isArray(responseData.warnings) ? responseData.warnings : [],
+      references: Array.isArray(responseData.references) ? responseData.references : [],
+      followUp: Array.isArray(responseData.followUp) ? responseData.followUp : [],
+    },
+    metadata: {
+      specialization: metadata.specialization || 'General',
+      confidence: metadata.confidence || 'Moderate',
+      requiresPhysicianConsult: metadata.requiresPhysicianConsult ?? true,
+      emergencyLevel: metadata.emergencyLevel || 'routine',
+      topRelatedSpecialties: Array.isArray(metadata.topRelatedSpecialties) ? metadata.topRelatedSpecialties : [],
+    },
+    disclaimer: getMedicalDisclaimer(language),
+  };
 };
 
 // API call with error handling
@@ -112,19 +153,11 @@ export const sendAIMessage = async (request: AIChatRequest): Promise<AIChatRespo
           'x-rapidapi-host': API_HOST,
           'Content-Type': 'application/json',
         },
-        timeout: 30000, // 30 second timeout
+        timeout: 30000,
       }
     );
 
-    // Parse response
-    const data = response.data;
-    
-    return {
-      response: typeof data === 'string' ? data : data.response || data.message || data.answer || JSON.stringify(data),
-      confidence: data.confidence,
-      sources: data.sources,
-      disclaimer: getMedicalDisclaimer(request.language),
-    };
+    return parseAPIResponse(response.data, request.language);
   } catch (error) {
     throw parseAIError(error);
   }
