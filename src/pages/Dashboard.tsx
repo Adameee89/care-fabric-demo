@@ -1,19 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAppointments } from '@/contexts/AppointmentContext';
-import { Calendar, FileText, Pill, MessageSquare, Bell, ChevronRight, Clock, Heart, Activity, TrendingUp, Plus } from 'lucide-react';
+import { Calendar, FileText, Pill, Bell, Activity, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { BookAppointmentForm } from '@/components/appointments/BookAppointmentForm';
 import { PatientAppointmentList } from '@/components/appointments/PatientAppointmentList';
 import { DoctorAppointmentInbox } from '@/components/appointments/DoctorAppointmentInbox';
+import { DoctorAppointmentsView } from '@/components/doctor/DoctorAppointmentsView';
+import { AdminAnalyticsDashboard } from '@/components/admin/AdminAnalyticsDashboard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getPatientPrescriptions, getPatientLabResults, notifications, patients, doctors } from '@/data/mockData';
+import { Heart } from 'lucide-react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
-  const { getUpcomingForPatient, getPendingForDoctor, getStatusStats } = useAppointments();
+  const { getUpcomingForPatient, getPendingForDoctor, getStatusStats, getTodaysSchedule, getDoctorAppointments } = useAppointments();
   const [bookingOpen, setBookingOpen] = useState(false);
 
   useEffect(() => {
@@ -31,7 +38,20 @@ const Dashboard = () => {
   
   const upcomingAppointments = user.role === 'patient' ? getUpcomingForPatient(patient.id) : [];
   const pendingRequests = user.role === 'doctor' ? getPendingForDoctor(doctor.id) : [];
+  const todaysSchedule = user.role === 'doctor' ? getTodaysSchedule(doctor.id) : [];
+  const doctorAppts = user.role === 'doctor' ? getDoctorAppointments(doctor.id) : [];
   const stats = getStatusStats();
+
+  // Doctor stats
+  const thisWeekAppts = doctorAppts.filter(a => {
+    const d = new Date(a.confirmedSlot?.date || '');
+    const now = new Date();
+    const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+    return d >= weekStart && ['Accepted', 'RescheduleAccepted'].includes(a.status);
+  }).length;
+  const noShowRate = doctorAppts.length > 0 
+    ? ((doctorAppts.filter(a => a.status === 'NoShow').length / doctorAppts.length) * 100).toFixed(1)
+    : '0';
 
   return (
     <div className="min-h-screen bg-background">
@@ -41,9 +61,10 @@ const Dashboard = () => {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[hsl(173,58%,39%)] to-[hsl(199,89%,48%)] flex items-center justify-center">
               <Heart className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-display font-bold">MediConnect</span>
+            <span className="text-xl font-display font-bold">{t('common.appName')}</span>
           </div>
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             <ThemeToggle />
             <button className="relative p-2 rounded-lg hover:bg-muted">
               <Bell className="w-5 h-5" />
@@ -59,10 +80,10 @@ const Dashboard = () => {
               </div>
               <div className="hidden md:block">
                 <p className="text-sm font-medium">{user.firstName} {user.lastName}</p>
-                <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
+                <p className="text-xs text-muted-foreground capitalize">{t(`common.${user.role}`)}</p>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={logout}>Logout</Button>
+            <Button variant="ghost" size="sm" onClick={logout}>{t('common.logout')}</Button>
           </div>
         </div>
       </header>
@@ -71,17 +92,17 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">
-              {user.role === 'patient' ? `Welcome back, ${patient.firstName}!` : 
-               user.role === 'doctor' ? `Hello, Dr. ${doctor.lastName}` : 'Admin Dashboard'}
+              {user.role === 'patient' ? t('auth.welcomeBack', { name: patient.firstName }) : 
+               user.role === 'doctor' ? t('auth.helloDoctor', { name: doctor.lastName }) : t('auth.adminDashboard')}
             </h1>
             <p className="text-muted-foreground">
-              {user.role === 'patient' ? "Here's your health overview." : 
-               user.role === 'doctor' ? `You have ${pendingRequests.length} pending requests` : 'System overview'}
+              {user.role === 'patient' ? t('doctor.dashboard.healthOverview') : 
+               user.role === 'doctor' ? t('doctor.dashboard.pendingCount', { count: pendingRequests.length }) : t('admin.dashboard.overview')}
             </p>
           </div>
           {user.role === 'patient' && (
             <Button variant="hero" onClick={() => setBookingOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" /> Book Appointment
+              <Plus className="w-4 h-4 mr-2" /> {t('appointments.bookAppointment')}
             </Button>
           )}
         </div>
@@ -94,8 +115,14 @@ const Dashboard = () => {
                 <Calendar className="w-5 h-5 text-primary" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{user.role === 'patient' ? upcomingAppointments.length : pendingRequests.length}</p>
-            <p className="text-sm text-muted-foreground">{user.role === 'patient' ? 'Upcoming' : 'Pending Requests'}</p>
+            <p className="text-2xl font-bold">
+              {user.role === 'patient' ? upcomingAppointments.length : 
+               user.role === 'doctor' ? todaysSchedule.length : stats.Requested || 0}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {user.role === 'patient' ? t('stats.upcoming') : 
+               user.role === 'doctor' ? t('doctor.dashboard.appointmentsToday') : t('appointments.pendingRequests')}
+            </p>
           </div>
           <div className="glass-card rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
@@ -103,8 +130,14 @@ const Dashboard = () => {
                 <Pill className="w-5 h-5 text-success" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{user.role === 'admin' ? stats.Completed || 0 : activePrescriptions.length}</p>
-            <p className="text-sm text-muted-foreground">{user.role === 'admin' ? 'Completed' : 'Active Prescriptions'}</p>
+            <p className="text-2xl font-bold">
+              {user.role === 'patient' ? activePrescriptions.length : 
+               user.role === 'doctor' ? thisWeekAppts : stats.Completed || 0}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {user.role === 'patient' ? t('stats.activePrescriptions') : 
+               user.role === 'doctor' ? t('doctor.dashboard.upcomingThisWeek') : t('stats.completed')}
+            </p>
           </div>
           <div className="glass-card rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
@@ -112,8 +145,14 @@ const Dashboard = () => {
                 <FileText className="w-5 h-5 text-info" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{user.role === 'admin' ? stats.Accepted || 0 : labResults.length}</p>
-            <p className="text-sm text-muted-foreground">{user.role === 'admin' ? 'Accepted' : 'Lab Results'}</p>
+            <p className="text-2xl font-bold">
+              {user.role === 'patient' ? labResults.length : 
+               user.role === 'doctor' ? pendingRequests.length : stats.Accepted || 0}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {user.role === 'patient' ? t('stats.labResults') : 
+               user.role === 'doctor' ? t('appointments.pendingRequests') : t('stats.accepted')}
+            </p>
           </div>
           <div className="glass-card rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
@@ -121,35 +160,49 @@ const Dashboard = () => {
                 <Activity className="w-5 h-5 text-secondary" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{user.role === 'admin' ? stats.Declined || 0 : patient.conditions.length}</p>
-            <p className="text-sm text-muted-foreground">{user.role === 'admin' ? 'Declined' : 'Active Conditions'}</p>
+            <p className="text-2xl font-bold">
+              {user.role === 'patient' ? patient.conditions.length : 
+               user.role === 'doctor' ? `${noShowRate}%` : stats.Declined || 0}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {user.role === 'patient' ? t('stats.activeConditions') : 
+               user.role === 'doctor' ? t('doctor.dashboard.noShowRate') : t('stats.declined')}
+            </p>
           </div>
         </div>
 
         {/* Role-specific Content */}
-        <div className="glass-card rounded-2xl p-6">
-          <h2 className="text-lg font-semibold mb-4">
-            {user.role === 'patient' ? 'My Appointments' : 
-             user.role === 'doctor' ? 'Appointment Inbox' : 'All Appointments Overview'}
-          </h2>
-          
-          {user.role === 'patient' && <PatientAppointmentList patientId={patient.id} />}
-          {user.role === 'doctor' && <DoctorAppointmentInbox doctorId={doctor.id} />}
-          {user.role === 'admin' && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {Object.entries(stats).map(([status, count]) => (
-                <div key={status} className="p-4 rounded-lg bg-muted/50 text-center">
-                  <p className="text-2xl font-bold">{count}</p>
-                  <p className="text-sm text-muted-foreground">{status}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {user.role === 'patient' && (
+          <div className="glass-card rounded-2xl p-6">
+            <h2 className="text-lg font-semibold mb-4">{t('appointments.myAppointments')}</h2>
+            <PatientAppointmentList patientId={patient.id} />
+          </div>
+        )}
+
+        {user.role === 'doctor' && (
+          <Tabs defaultValue="inbox" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="inbox">{t('appointments.appointmentInbox')} ({pendingRequests.length})</TabsTrigger>
+              <TabsTrigger value="schedule">{t('appointments.title')}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="inbox">
+              <div className="glass-card rounded-2xl p-6">
+                <DoctorAppointmentInbox doctorId={doctor.id} />
+              </div>
+            </TabsContent>
+            <TabsContent value="schedule">
+              <div className="glass-card rounded-2xl p-6">
+                <DoctorAppointmentsView doctorId={doctor.id} />
+              </div>
+            </TabsContent>
+          </Tabs>
+        )}
+
+        {user.role === 'admin' && <AdminAnalyticsDashboard />}
 
         <div className="mt-8 p-4 rounded-xl bg-warning/10 border border-warning/20 text-center">
           <p className="text-sm text-warning">
-            <strong>Demo Mode:</strong> This is a demonstration with simulated data.
+            <strong>{t('common.demoMode')}:</strong> {t('common.demoModeDesc')}
           </p>
         </div>
       </main>
