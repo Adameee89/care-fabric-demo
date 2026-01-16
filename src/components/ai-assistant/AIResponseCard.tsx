@@ -9,7 +9,10 @@ import {
   Shield,
   AlertCircle,
   Activity,
-  ChevronRight
+  ChevronRight,
+  Heart,
+  Pill,
+  Leaf
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AIResponseData, AIResponseMetadata } from '@/services/aiHealthcareApi';
@@ -41,6 +44,17 @@ const AIResponseCard = memo(({ response, metadata, disclaimer }: AIResponseCardP
     }
   };
   
+  const getProbabilityColor = (probability: string) => {
+    const lower = probability.toLowerCase();
+    if (lower.includes('high') || parseFloat(probability) > 0.7) {
+      return 'bg-destructive/10 text-destructive border-destructive/30';
+    }
+    if (lower.includes('moderate') || lower.includes('medium') || (parseFloat(probability) > 0.4 && parseFloat(probability) <= 0.7)) {
+      return 'bg-warning/10 text-warning border-warning/30';
+    }
+    return 'bg-muted text-muted-foreground border-border';
+  };
+  
   return (
     <div className="space-y-4">
       {/* Metadata badges */}
@@ -65,8 +79,51 @@ const AIResponseCard = memo(({ response, metadata, disclaimer }: AIResponseCardP
       
       {/* Main message */}
       <div className="bg-muted rounded-xl p-4">
-        <p className="text-sm leading-relaxed">{response.message}</p>
+        <p className="text-sm leading-relaxed whitespace-pre-wrap">{response.message}</p>
       </div>
+      
+      {/* Diagnoses - New section */}
+      {response.diagnoses && response.diagnoses.length > 0 && (
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center">
+              <Heart className="w-4 h-4 text-primary" />
+            </div>
+            <h4 className="font-semibold text-sm text-primary">{t('ai.response.possibleConditions', 'Possible Conditions')}</h4>
+          </div>
+          <div className="space-y-3">
+            {response.diagnoses.map((diagnosis, index) => (
+              <div key={index} className="bg-background/50 rounded-lg p-3 border border-border/50">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <span className="font-medium text-sm">{diagnosis.condition}</span>
+                  <Badge variant="outline" className={cn('text-xs shrink-0', getProbabilityColor(diagnosis.probability))}>
+                    {diagnosis.probability}
+                  </Badge>
+                </div>
+                {diagnosis.description && (
+                  <p className="text-xs text-muted-foreground mt-1">{diagnosis.description}</p>
+                )}
+                {diagnosis.icdCode && (
+                  <span className="text-xs text-muted-foreground/70 mt-1 block">ICD: {diagnosis.icdCode}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Specialist Referral */}
+      {response.specialistReferral && (
+        <div className="bg-info/10 border border-info/20 rounded-xl p-4">
+          <div className="flex items-center gap-2">
+            <Stethoscope className="w-5 h-5 text-info" />
+            <div>
+              <span className="font-medium text-sm">{t('ai.response.specialistReferral', 'Recommended Specialist:')}</span>
+              <span className="ml-2 text-sm text-info">{response.specialistReferral}</span>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Recommendations */}
       {response.recommendations.length > 0 && (
@@ -82,6 +139,26 @@ const AIResponseCard = memo(({ response, metadata, disclaimer }: AIResponseCardP
               <li key={index} className="flex items-start gap-2 text-sm">
                 <ChevronRight className="w-4 h-4 text-success shrink-0 mt-0.5" />
                 <span>{rec}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      {/* Lifestyle Advice - New section */}
+      {response.lifestyle && response.lifestyle.length > 0 && (
+        <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <Leaf className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <h4 className="font-semibold text-sm text-emerald-600 dark:text-emerald-400">{t('ai.response.lifestyle', 'Lifestyle Advice')}</h4>
+          </div>
+          <ul className="space-y-2">
+            {response.lifestyle.map((advice, index) => (
+              <li key={index} className="flex items-start gap-2 text-sm">
+                <ChevronRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                <span>{advice}</span>
               </li>
             ))}
           </ul>

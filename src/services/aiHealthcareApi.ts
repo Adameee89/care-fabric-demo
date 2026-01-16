@@ -1,11 +1,11 @@
 import axios, { AxiosError } from 'axios';
 
-// API configuration
-const API_URL = 'https://ai-doctor-api-ai-medical-chatbot-healthcare-ai-assistant.p.rapidapi.com/chat';
+// API configuration for Medical Diagnosis API
+const API_URL = 'https://ai-medical-diagnosis-api-symptoms-to-results.p.rapidapi.com/analyzeSymptomsAndDiagnose';
 const API_KEY = '4c6806186bmshdc5a602fb55b29dp18c21bjsnf96c5dc5ebe2';
-const API_HOST = 'ai-doctor-api-ai-medical-chatbot-healthcare-ai-assistant.p.rapidapi.com';
+const API_HOST = 'ai-medical-diagnosis-api-symptoms-to-results.p.rapidapi.com';
 
-// Supported specializations
+// Supported specializations (kept for UI compatibility)
 export type AISpecialization = 
   | 'general'
   | 'cardiology'
@@ -40,13 +40,42 @@ export const specializationOptions: AISpecializationOption[] = [
 // Supported languages
 export type AILanguage = 'en' | 'de' | 'fr' | 'es' | 'ar' | 'it' | 'pt' | 'nl' | 'pl' | 'ru' | 'zh' | 'ja' | 'ko' | 'hi';
 
-// Rich response structure from API
+// Patient Info structure for the new API
+export interface PatientInfo {
+  age?: number;
+  gender?: 'male' | 'female' | 'other';
+  height?: number;
+  weight?: number;
+  medicalHistory?: string[];
+  currentMedications?: string[];
+  allergies?: string[];
+  lifestyle?: {
+    smoking?: boolean;
+    alcohol?: 'none' | 'occasional' | 'moderate' | 'heavy';
+    exercise?: 'none' | 'light' | 'moderate' | 'intense';
+    diet?: 'balanced' | 'vegetarian' | 'vegan' | 'keto' | 'other';
+  };
+}
+
+// Diagnosis from API
+export interface Diagnosis {
+  condition: string;
+  probability: string;
+  description: string;
+  icdCode?: string;
+}
+
+// Rich response structure from new API
 export interface AIResponseData {
   message: string;
+  diagnoses: Diagnosis[];
   recommendations: string[];
   warnings: string[];
   references: string[];
   followUp: string[];
+  lifestyle: string[];
+  urgency: string;
+  specialistReferral?: string;
 }
 
 export interface AIResponseMetadata {
@@ -61,6 +90,7 @@ export interface AIChatRequest {
   message: string;
   specialization: AISpecialization;
   language: string;
+  patientInfo?: PatientInfo;
 }
 
 export interface AIChatResponse {
@@ -108,52 +138,120 @@ export const getMedicalDisclaimer = (lang: string): string => {
   return disclaimers[lang] || disclaimers.en;
 };
 
-// Parse the rich API response
+// Parse symptoms from user message
+const extractSymptomsFromMessage = (message: string): string[] => {
+  // Simple extraction - split by common delimiters and clean up
+  const symptoms = message
+    .toLowerCase()
+    .replace(/[.,!?]/g, ',')
+    .split(/[,\n]+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 2 && s.length < 100);
+  
+  // Return at least the full message if no clear symptoms extracted
+  return symptoms.length > 0 ? symptoms : [message.trim()];
+};
+
+// Parse the new API response
 const parseAPIResponse = (data: any, language: string): AIChatResponse => {
-  // Handle the nested structure
   const result = data?.result || data;
-  const responseData = result?.response || {};
-  const metadata = result?.metadata || {};
+  
+  // Extract diagnoses
+  const diagnoses: Diagnosis[] = Array.isArray(result?.diagnoses) 
+    ? result.diagnoses.map((d: any) => ({
+        condition: d.condition || d.name || 'Unknown condition',
+        probability: d.probability || d.likelihood || 'Unknown',
+        description: d.description || d.explanation || '',
+        icdCode: d.icdCode || d.icd_code,
+      }))
+    : [];
+  
+  // Build main message from analysis or summary
+  let mainMessage = result?.summary || result?.analysis || result?.message || '';
+  if (!mainMessage && diagnoses.length > 0) {
+    mainMessage = `Based on the symptoms provided, here are the possible conditions identified:\n\n${diagnoses.map((d, i) => 
+      `${i + 1}. **${d.condition}** (${d.probability} probability)\n${d.description}`
+    ).join('\n\n')}`;
+  }
+  
+  // Extract urgency level
+  const urgencyLevel = result?.urgencyLevel || result?.urgency || 'routine';
+  const emergencyLevel = urgencyLevel === 'high' || urgencyLevel === 'emergency' 
+    ? 'emergency' 
+    : urgencyLevel === 'medium' || urgencyLevel === 'urgent' 
+      ? 'urgent' 
+      : 'routine';
+  
+  // Determine confidence from diagnoses
+  const hasHighProbability = diagnoses.some(d => 
+    d.probability.toLowerCase().includes('high') || 
+    parseFloat(d.probability) > 0.7
+  );
+  const confidence = hasHighProbability ? 'High' : diagnoses.length > 0 ? 'Moderate' : 'Low';
   
   return {
     response: {
-      message: responseData.message || (typeof data === 'string' ? data : 'No response available'),
-      recommendations: Array.isArray(responseData.recommendations) ? responseData.recommendations : [],
-      warnings: Array.isArray(responseData.warnings) ? responseData.warnings : [],
-      references: Array.isArray(responseData.references) ? responseData.references : [],
-      followUp: Array.isArray(responseData.followUp) ? responseData.followUp : [],
+      message: mainMessage || 'Analysis complete. Please see the details below.',
+      diagnoses,
+      recommendations: Array.isArray(result?.recommendations) ? result.recommendations : [],
+      warnings: Array.isArray(result?.warnings) ? result.warnings : [],
+      references: Array.isArray(result?.references) ? result.references : [],
+      followUp: Array.isArray(result?.followUpQuestions) || Array.isArray(result?.followUp) 
+        ? (result.followUpQuestions || result.followUp) 
+        : [],
+      lifestyle: Array.isArray(result?.lifestyleAdvice) || Array.isArray(result?.lifestyle)
+        ? (result.lifestyleAdvice || result.lifestyle)
+        : [],
+      urgency: urgencyLevel,
+      specialistReferral: result?.specialistReferral || result?.referral,
     },
     metadata: {
-      specialization: metadata.specialization || 'General',
-      confidence: metadata.confidence || 'Moderate',
-      requiresPhysicianConsult: metadata.requiresPhysicianConsult ?? true,
-      emergencyLevel: metadata.emergencyLevel || 'routine',
-      topRelatedSpecialties: Array.isArray(metadata.topRelatedSpecialties) ? metadata.topRelatedSpecialties : [],
+      specialization: result?.specialization || 'General Medicine',
+      confidence,
+      requiresPhysicianConsult: result?.requiresPhysicianConsult ?? emergencyLevel !== 'routine',
+      emergencyLevel,
+      topRelatedSpecialties: Array.isArray(result?.relatedSpecialties) 
+        ? result.relatedSpecialties 
+        : diagnoses.length > 0 
+          ? ['General Practice', 'Internal Medicine']
+          : [],
     },
     disclaimer: getMedicalDisclaimer(language),
   };
 };
 
+// Default patient info for demo
+const defaultPatientInfo: PatientInfo = {
+  age: 35,
+  gender: 'other',
+  lifestyle: {
+    smoking: false,
+    alcohol: 'occasional',
+    exercise: 'moderate',
+    diet: 'balanced',
+  },
+};
+
 // API call with error handling
 export const sendAIMessage = async (request: AIChatRequest): Promise<AIChatResponse> => {
   const apiLanguage = mapLanguageToAPI(request.language);
+  const symptoms = extractSymptomsFromMessage(request.message);
   
   try {
     const response = await axios.post(
       API_URL,
       {
-        message: request.message,
-        specialization: request.specialization,
-        language: apiLanguage,
+        symptoms,
+        patientInfo: request.patientInfo || defaultPatientInfo,
+        lang: apiLanguage,
       },
       {
-        params: { noqueue: '1' },
         headers: {
           'x-rapidapi-key': API_KEY,
           'x-rapidapi-host': API_HOST,
           'Content-Type': 'application/json',
         },
-        timeout: 30000,
+        timeout: 45000,
       }
     );
 
