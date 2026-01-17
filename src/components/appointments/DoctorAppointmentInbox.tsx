@@ -3,6 +3,8 @@ import { useAppointments } from '@/contexts/AppointmentContext';
 import { ExtendedAppointment, DeclineReason, declineReasonLabels, availableTimeSlots } from '@/data/appointmentData';
 import { AppointmentStatusBadge } from './AppointmentStatusBadge';
 import { Button } from '@/components/ui/button';
+import { UserAvatar } from '@/components/UserAvatar';
+import { patients } from '@/data/mockData';
 import { Calendar, Clock, User, Check, X, RefreshCw, AlertTriangle, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -73,9 +75,21 @@ export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps
         <div key={apt.id} className="glass-card rounded-xl p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="w-5 h-5 text-primary" />
-              </div>
+              {(() => {
+                const patient = patients.find(p => p.id === apt.patientId);
+                return patient ? (
+                  <UserAvatar 
+                    userId={patient.id}
+                    firstName={patient.firstName}
+                    lastName={patient.lastName}
+                    size="md"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="w-5 h-5 text-primary" />
+                  </div>
+                );
+              })()}
               <div>
                 <h4 className="font-medium">{apt.patientName}</h4>
                 <p className="text-sm text-muted-foreground">{apt.appointmentType}</p>
