@@ -3,6 +3,8 @@ import { useAppointments } from '@/contexts/AppointmentContext';
 import { ExtendedAppointment, statusConfig, declineReasonLabels } from '@/data/appointmentData';
 import { AppointmentStatusBadge } from './AppointmentStatusBadge';
 import { Button } from '@/components/ui/button';
+import { DoctorAvatar, doctorAvatars } from '@/components/DoctorAvatar';
+import { doctors } from '@/data/mockData';
 import { 
   Calendar, 
   Clock, 
@@ -110,9 +112,21 @@ export const PatientAppointmentList = ({ patientId }: PatientAppointmentListProp
       >
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <User className="w-6 h-6 text-primary" />
-            </div>
+            {(() => {
+              const doctor = doctors.find(d => d.id === appointment.doctorId);
+              return doctor ? (
+                <DoctorAvatar 
+                  doctorId={doctor.id}
+                  firstName={doctor.firstName}
+                  lastName={doctor.lastName}
+                  size="lg"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="w-6 h-6 text-primary" />
+                </div>
+              );
+            })()}
             <div>
               <h4 className="font-semibold">{appointment.doctorName}</h4>
               <p className="text-sm text-muted-foreground">{appointment.doctorSpecialty}</p>

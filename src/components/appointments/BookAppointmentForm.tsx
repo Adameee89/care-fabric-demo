@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { DoctorAvatar } from '@/components/DoctorAvatar';
 import {
   Select,
   SelectContent,
@@ -185,9 +186,12 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
                       : "border-border hover:border-primary/30 hover:bg-muted/50"
                   )}
                 >
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-semibold text-primary">
-                    {doctor.firstName[0]}{doctor.lastName[0]}
-                  </div>
+                  <DoctorAvatar 
+                    doctorId={doctor.id}
+                    firstName={doctor.firstName}
+                    lastName={doctor.lastName}
+                    size="lg"
+                  />
                   <div className="flex-1">
                     <h4 className="font-semibold">{doctor.name}</h4>
                     <p className="text-sm text-muted-foreground">{doctor.specialty}</p>
@@ -218,9 +222,12 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
           <div className="space-y-6">
             {selectedDoctorData && (
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-semibold text-primary text-sm">
-                  {selectedDoctorData.firstName[0]}{selectedDoctorData.lastName[0]}
-                </div>
+                <DoctorAvatar 
+                  doctorId={selectedDoctorData.id}
+                  firstName={selectedDoctorData.firstName}
+                  lastName={selectedDoctorData.lastName}
+                  size="md"
+                />
                 <div>
                   <p className="font-medium">{selectedDoctorData.name}</p>
                   <p className="text-sm text-muted-foreground">{selectedDoctorData.specialty}</p>
