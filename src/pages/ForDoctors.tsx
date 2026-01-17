@@ -17,6 +17,8 @@ import {
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
+import doctorsTeamImage from '@/assets/doctors-team.jpg';
+import doctorEmilyAvatar from '@/assets/avatars/doctor-emily.jpg';
 
 const ForDoctors = () => {
   const { t } = useTranslation();
@@ -115,9 +117,11 @@ const ForDoctors = () => {
                     <p className="text-sm text-muted-foreground">{t('forDoctors.preview.welcome', 'Welcome back,')}</p>
                     <h3 className="text-lg font-semibold">Dr. Emily Carter</h3>
                   </div>
-                  <div className="w-12 h-12 rounded-full gradient-bg-hero flex items-center justify-center text-white font-semibold">
-                    EC
-                  </div>
+                  <img 
+                    src={doctorEmilyAvatar} 
+                    alt="Dr. Emily Carter" 
+                    className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20"
+                  />
                 </div>
                 
                 <div className="grid grid-cols-3 gap-4 mb-6">
@@ -226,8 +230,16 @@ const ForDoctors = () => {
       </section>
       
       {/* CTA */}
-      <section className="py-20 gradient-bg-hero">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={doctorsTeamImage} 
+            alt="Healthcare team" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-info/80" />
+        </div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
             {t('forDoctors.ctaTitle', 'Ready to Modernize Your Practice?')}
           </h2>

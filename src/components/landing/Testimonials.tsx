@@ -1,12 +1,20 @@
 import { Star, Quote } from 'lucide-react';
 
+// Import testimonial avatars
+import sarahAvatar from '@/assets/avatars/testimonial-sarah.jpg';
+import jamesAvatar from '@/assets/avatars/testimonial-james.jpg';
+import michaelAvatar from '@/assets/avatars/testimonial-michael.jpg';
+import emilyWAvatar from '@/assets/avatars/testimonial-emily-w.jpg';
+import robertAvatar from '@/assets/avatars/testimonial-robert.jpg';
+import lisaAvatar from '@/assets/avatars/testimonial-lisa.jpg';
+
 const Testimonials = () => {
   const testimonials = [
     {
       name: 'Dr. Sarah Mitchell',
       role: 'Cardiologist',
       organization: 'Heart Care Clinic',
-      avatar: 'SM',
+      avatar: sarahAvatar,
       content: "MediConnect has transformed how I manage my practice. The patient records system is intuitive, and the AI-assisted insights help me provide better care. My efficiency has improved by 40%.",
       rating: 5,
     },
@@ -14,7 +22,7 @@ const Testimonials = () => {
       name: 'James Rodriguez',
       role: 'Patient',
       organization: '',
-      avatar: 'JR',
+      avatar: jamesAvatar,
       content: "Finally, a healthcare platform that puts patients first! I can easily access my medical history, schedule appointments, and even chat with my doctor. The telemedicine feature saved me countless trips.",
       rating: 5,
     },
@@ -22,7 +30,7 @@ const Testimonials = () => {
       name: 'Dr. Michael Chen',
       role: 'Family Medicine',
       organization: 'Family Health Partners',
-      avatar: 'MC',
+      avatar: michaelAvatar,
       content: "The seamless integration between scheduling, records, and billing has made running my practice so much easier. The support team is incredibly responsive and helpful.",
       rating: 5,
     },
@@ -30,7 +38,7 @@ const Testimonials = () => {
       name: 'Emily Watson',
       role: 'Practice Manager',
       organization: 'Metro Health Group',
-      avatar: 'EW',
+      avatar: emilyWAvatar,
       content: "We switched to MediConnect for our 12-doctor practice and the transition was smooth. The reporting features and patient engagement tools have significantly improved our operations.",
       rating: 5,
     },
@@ -38,7 +46,7 @@ const Testimonials = () => {
       name: 'Robert Kim',
       role: 'Patient',
       organization: '',
-      avatar: 'RK',
+      avatar: robertAvatar,
       content: "As someone managing a chronic condition, having all my prescriptions, lab results, and appointments in one place is life-changing. The medication reminders are a game-changer.",
       rating: 5,
     },
@@ -46,7 +54,7 @@ const Testimonials = () => {
       name: 'Dr. Lisa Thompson',
       role: 'Pediatrician',
       organization: 'Children\'s Wellness Center',
-      avatar: 'LT',
+      avatar: lisaAvatar,
       content: "Parents love being able to access their children's vaccination records and growth charts anytime. The platform makes my job easier and patients happier.",
       rating: 5,
     },
@@ -94,9 +102,11 @@ const Testimonials = () => {
 
               {/* Author */}
               <div className="flex items-center gap-3 pt-4 border-t border-border">
-                <div className="w-12 h-12 rounded-full gradient-bg-hero flex items-center justify-center text-white font-semibold text-sm">
-                  {testimonial.avatar}
-                </div>
+                <img 
+                  src={testimonial.avatar} 
+                  alt={testimonial.name}
+                  className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/10"
+                />
                 <div>
                   <p className="font-semibold text-foreground">{testimonial.name}</p>
                   <p className="text-sm text-muted-foreground">
