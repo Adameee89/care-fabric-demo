@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useEnterpriseAuth } from '@/contexts/EnterpriseAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useEnterpriseAuthSafe } from '@/contexts/EnterpriseAuthContext';
 import { useUserManagement } from '@/contexts/UserManagementContext';
 import { UserManagementTable } from '@/components/admin/UserManagementTable';
 import { AuditLogTable } from '@/components/admin/AuditLogTable';
@@ -28,10 +29,26 @@ import {
 const UserManagement: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { currentUser, isAuthenticated, hasRole, logout, isImpersonating } = useEnterpriseAuth();
+  const { user: authUser, isAuthenticated: authIsAuthenticated, logout: authLogout } = useAuth();
+  const { currentUser: enterpriseUser, isAuthenticated: enterpriseIsAuthenticated, hasRole, logout: enterpriseLogout, isImpersonating } = useEnterpriseAuthSafe();
   const { getUserStats } = useUserManagement();
   
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+
+  // Determine if user is authenticated and is admin
+  const isAuthenticated = authIsAuthenticated || enterpriseIsAuthenticated;
+  const isAdmin = hasRole('ADMIN') || authUser?.role === 'admin';
+  const currentUser = enterpriseUser || (authUser ? {
+    id: authUser.id,
+    firstName: authUser.firstName,
+    lastName: authUser.lastName,
+    email: authUser.email,
+    role: authUser.role.toUpperCase() as 'ADMIN' | 'DOCTOR' | 'PATIENT',
+    status: 'ACTIVE' as const,
+    createdAt: new Date().toISOString(),
+    lastLoginAt: new Date().toISOString(),
+  } : null);
+  const logout = enterpriseUser ? enterpriseLogout : authLogout;
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -39,12 +56,12 @@ const UserManagement: React.FC = () => {
       return;
     }
     
-    if (!hasRole('ADMIN')) {
+    if (!isAdmin) {
       navigate('/dashboard');
     }
-  }, [isAuthenticated, hasRole, navigate]);
+  }, [isAuthenticated, isAdmin, navigate]);
 
-  if (!currentUser || !hasRole('ADMIN')) {
+  if (!currentUser || !isAdmin) {
     return null;
   }
 
@@ -80,7 +97,7 @@ const UserManagement: React.FC = () => {
             <ThemeToggle />
             <div className="flex items-center gap-3">
               <UserAvatar
-                userId={currentUser.linkedEntityId || currentUser.id}
+                userId={'linkedEntityId' in currentUser ? (currentUser.linkedEntityId || currentUser.id) : currentUser.id}
                 firstName={currentUser.firstName}
                 lastName={currentUser.lastName}
                 size="md"
