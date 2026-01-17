@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
+import { useEnterpriseAuth } from '@/contexts/EnterpriseAuthContext';
 import { useAppointments } from '@/contexts/AppointmentContext';
-import { Calendar, FileText, Pill, Bell, Activity, Plus, Menu, LogOut, Settings, Globe, Sun, Moon } from 'lucide-react';
+import { Calendar, FileText, Pill, Bell, Activity, Plus, Menu, LogOut, Settings, Globe, Sun, Moon, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -12,6 +13,7 @@ import { PatientAppointmentList } from '@/components/appointments/PatientAppoint
 import { DoctorAppointmentInbox } from '@/components/appointments/DoctorAppointmentInbox';
 import { DoctorAppointmentsView } from '@/components/doctor/DoctorAppointmentsView';
 import { AdminAnalyticsDashboard } from '@/components/admin/AdminAnalyticsDashboard';
+import { ImpersonationBanner } from '@/components/admin/ImpersonationBanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getPatientPrescriptions, getPatientLabResults, notifications, patients, doctors } from '@/data/mockData';
 import { Heart } from 'lucide-react';
@@ -36,6 +38,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
+  const { isImpersonating, currentUser: enterpriseUser, hasRole } = useEnterpriseAuth();
   const { getUpcomingForPatient, getPendingForDoctor, getStatusStats, getTodaysSchedule, getDoctorAppointments } = useAppointments();
   const [bookingOpen, setBookingOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,6 +49,8 @@ const Dashboard = () => {
   }, [isAuthenticated, navigate]);
 
   if (!user) return null;
+
+  const isAdmin = hasRole('ADMIN') || user.role === 'admin';
 
   const patient = patients.find(p => p.id === 'pat_042')!;
   const doctor = doctors.find(d => d.id === 'doc_001')!;
@@ -72,7 +77,8 @@ const Dashboard = () => {
     : '0';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background ${isImpersonating ? 'pt-12' : ''}`}>
+      <ImpersonationBanner />
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="container mx-auto px-4 h-14 md:h-16 flex items-center justify-between">
           {/* Logo - always visible */}
@@ -108,6 +114,12 @@ const Dashboard = () => {
                 <p className="text-xs text-muted-foreground capitalize">{t(`common.${user.role}`)}</p>
               </div>
             </div>
+            {isAdmin && (
+              <Button variant="outline" size="sm" onClick={() => navigate('/admin/users')}>
+                <Users className="w-4 h-4 mr-2" />
+                Users
+              </Button>
+            )}
             <Button variant="ghost" size="sm" onClick={logout}>{t('common.logout')}</Button>
           </div>
 

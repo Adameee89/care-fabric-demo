@@ -6,12 +6,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import '@/i18n';
 import { AuthProvider } from "@/contexts/AuthContext";
+import { EnterpriseAuthProvider } from "@/contexts/EnterpriseAuthContext";
+import { UserManagementProvider } from "@/contexts/UserManagementContext";
 import { AppointmentProvider } from "@/contexts/AppointmentContext";
 import { AIChatProvider } from "@/contexts/AIChatContext";
 import FloatingAssistant from "@/components/ai-assistant/FloatingAssistant";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import UserManagement from "./pages/UserManagement";
 import AIAssistant from "./pages/AIAssistant";
 import AIAssistantPublic from "./pages/AIAssistantPublic";
 import Features from "./pages/Features";
@@ -25,31 +28,36 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <AuthProvider>
-        <AppointmentProvider>
-          <AIChatProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/ai-assistant" element={<AIAssistant />} />
-                  <Route path="/ai" element={<AIAssistantPublic />} />
-                  <Route path="/features" element={<Features />} />
-                  <Route path="/for-doctors" element={<ForDoctors />} />
-                  <Route path="/for-patients" element={<ForPatients />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <FloatingAssistant />
-              </BrowserRouter>
-            </TooltipProvider>
-          </AIChatProvider>
-        </AppointmentProvider>
-      </AuthProvider>
+      <UserManagementProvider>
+        <EnterpriseAuthProvider>
+          <AuthProvider>
+            <AppointmentProvider>
+              <AIChatProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/admin/users" element={<UserManagement />} />
+                      <Route path="/ai-assistant" element={<AIAssistant />} />
+                      <Route path="/ai" element={<AIAssistantPublic />} />
+                      <Route path="/features" element={<Features />} />
+                      <Route path="/for-doctors" element={<ForDoctors />} />
+                      <Route path="/for-patients" element={<ForPatients />} />
+                      <Route path="/pricing" element={<Pricing />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                    <FloatingAssistant />
+                  </BrowserRouter>
+                </TooltipProvider>
+              </AIChatProvider>
+            </AppointmentProvider>
+          </AuthProvider>
+        </EnterpriseAuthProvider>
+      </UserManagementProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
