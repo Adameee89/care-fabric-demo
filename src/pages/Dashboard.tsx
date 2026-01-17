@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
-import { useEnterpriseAuth } from '@/contexts/EnterpriseAuthContext';
+import { useEnterpriseAuthSafe } from '@/contexts/EnterpriseAuthContext';
 import { useAppointments } from '@/contexts/AppointmentContext';
 import { Calendar, FileText, Pill, Bell, Activity, Plus, Menu, LogOut, Settings, Globe, Sun, Moon, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -38,7 +38,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
-  const { isImpersonating, currentUser: enterpriseUser, hasRole } = useEnterpriseAuth();
+  const { isImpersonating, currentUser: enterpriseUser, hasRole } = useEnterpriseAuthSafe();
   const { getUpcomingForPatient, getPendingForDoctor, getStatusStats, getTodaysSchedule, getDoctorAppointments } = useAppointments();
   const [bookingOpen, setBookingOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

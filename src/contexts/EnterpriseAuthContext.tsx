@@ -172,8 +172,30 @@ export const EnterpriseAuthProvider: React.FC<{ children: React.ReactNode }> = (
 
 export const useEnterpriseAuth = (): EnterpriseAuthContextType => {
   const context = useContext(EnterpriseAuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useEnterpriseAuth must be used within an EnterpriseAuthProvider');
+  }
+  return context;
+};
+
+// Safe hook that returns defaults when outside provider (for gradual migration)
+export const useEnterpriseAuthSafe = (): EnterpriseAuthContextType => {
+  const context = useContext(EnterpriseAuthContext);
+  if (!context) {
+    return {
+      currentUser: null,
+      isAuthenticated: false,
+      login: () => {},
+      logout: () => {},
+      isImpersonating: false,
+      originalUser: null,
+      impersonate: () => {},
+      stopImpersonation: () => {},
+      hasRole: () => false,
+      hasAccess: () => false,
+      getDisplayName: () => '',
+      getSessionInfo: () => null,
+    };
   }
   return context;
 };
