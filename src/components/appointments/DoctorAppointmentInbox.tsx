@@ -94,14 +94,14 @@ export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps
             ))}
           </div>
           
-          <div className="flex gap-2 pt-3 border-t">
-            <Button size="sm" onClick={() => { setSelectedAppointment(apt); setAcceptDialogOpen(true); }}>
+          <div className="flex flex-wrap gap-2 pt-3 border-t">
+            <Button size="sm" className="flex-shrink-0" onClick={() => { setSelectedAppointment(apt); setAcceptDialogOpen(true); }}>
               <Check className="w-4 h-4 mr-1" /> Accept
             </Button>
-            <Button size="sm" variant="outline" onClick={() => { setSelectedAppointment(apt); setRescheduleDialogOpen(true); }}>
+            <Button size="sm" variant="outline" className="flex-shrink-0" onClick={() => { setSelectedAppointment(apt); setRescheduleDialogOpen(true); }}>
               <RefreshCw className="w-4 h-4 mr-1" /> Reschedule
             </Button>
-            <Button size="sm" variant="ghost" className="text-destructive" onClick={() => { setSelectedAppointment(apt); setDeclineDialogOpen(true); }}>
+            <Button size="sm" variant="ghost" className="text-destructive flex-shrink-0" onClick={() => { setSelectedAppointment(apt); setDeclineDialogOpen(true); }}>
               <X className="w-4 h-4 mr-1" /> Decline
             </Button>
           </div>

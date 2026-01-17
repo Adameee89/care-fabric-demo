@@ -82,20 +82,51 @@ export const AdminAnalyticsDashboard = () => {
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5" />{t('admin.analytics.statusDistribution')}</CardTitle></CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart><Pie data={statusData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                {statusData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-              </Pie><Tooltip /><Legend /></PieChart>
+          <CardContent className="overflow-hidden">
+            <ResponsiveContainer width="100%" height={320}>
+              <PieChart>
+                <Pie 
+                  data={statusData} 
+                  cx="50%" 
+                  cy="35%" 
+                  innerRadius={50} 
+                  outerRadius={80} 
+                  paddingAngle={2} 
+                  dataKey="value"
+                  label={false}
+                >
+                  {statusData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                </Pie>
+                <Tooltip formatter={(value, name) => [value, name]} />
+                <Legend 
+                  layout="horizontal" 
+                  align="center" 
+                  verticalAlign="bottom"
+                  wrapperStyle={{ paddingTop: '20px' }}
+                  formatter={(value: string, entry: any) => {
+                    const item = statusData.find(d => d.name === value);
+                    const total = statusData.reduce((sum, d) => sum + d.value, 0);
+                    const percent = item && total > 0 ? ((item.value / total) * 100).toFixed(0) : 0;
+                    return <span className="text-xs">{value} ({percent}%)</span>;
+                  }}
+                />
+              </PieChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><Award className="h-5 w-5" />{t('admin.analytics.appointmentsPerDoctor')}</CardTitle></CardHeader>
-          <CardContent>
+          <CardContent className="overflow-hidden">
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={doctorAnalytics.slice(0, 6)} layout="vertical">
-                <XAxis type="number" /><YAxis dataKey="name" type="category" width={120} tick={{ fontSize: 12 }} />
+                <XAxis type="number" />
+                <YAxis 
+                  dataKey="name" 
+                  type="category" 
+                  width={80} 
+                  tick={{ fontSize: 10 }} 
+                  tickFormatter={(value) => value.length > 12 ? value.substring(0, 12) + '...' : value}
+                />
                 <Tooltip /><Bar dataKey="totalAppointments" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
