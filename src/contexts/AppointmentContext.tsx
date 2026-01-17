@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import {
   ExtendedAppointment,
   AppointmentStatus,
@@ -10,6 +10,31 @@ import {
 } from '@/data/appointmentData';
 import { doctors, patients } from '@/data/mockData';
 import { toast } from 'sonner';
+
+// LocalStorage key for appointments
+const APPOINTMENTS_STORAGE_KEY = 'mediconnect_appointments';
+
+// Helper to load appointments from localStorage
+const loadAppointmentsFromStorage = (): ExtendedAppointment[] => {
+  try {
+    const stored = localStorage.getItem(APPOINTMENTS_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Failed to load appointments from localStorage:', error);
+  }
+  return initialAppointments;
+};
+
+// Helper to save appointments to localStorage
+const saveAppointmentsToStorage = (appointments: ExtendedAppointment[]) => {
+  try {
+    localStorage.setItem(APPOINTMENTS_STORAGE_KEY, JSON.stringify(appointments));
+  } catch (error) {
+    console.error('Failed to save appointments to localStorage:', error);
+  }
+};
 
 // Fake API simulation
 interface FakeAPIResponse<T> {
@@ -91,10 +116,15 @@ interface UndoState {
 const AppointmentContext = createContext<AppointmentContextType | undefined>(undefined);
 
 export const AppointmentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [appointments, setAppointments] = useState<ExtendedAppointment[]>(initialAppointments);
+  const [appointments, setAppointments] = useState<ExtendedAppointment[]>(() => loadAppointmentsFromStorage());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [undoStack, setUndoStack] = useState<UndoState[]>([]);
+  
+  // Persist appointments to localStorage whenever they change
+  useEffect(() => {
+    saveAppointmentsToStorage(appointments);
+  }, [appointments]);
 
   // Helper to update appointment
   const updateAppointment = useCallback((
