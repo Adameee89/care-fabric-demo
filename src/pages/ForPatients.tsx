@@ -17,6 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
+import patientConsultationImage from '@/assets/patient-consultation.jpg';
 
 const ForPatients = () => {
   const { t } = useTranslation();
@@ -310,8 +311,16 @@ const ForPatients = () => {
       </section>
       
       {/* CTA */}
-      <section className="py-20 gradient-bg-hero">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={patientConsultationImage} 
+            alt="Patient consultation" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary/90 to-primary/80" />
+        </div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
             {t('forPatients.ctaTitle', 'Take Control of Your Health Today')}
           </h2>

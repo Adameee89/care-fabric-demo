@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Play, Shield, Clock, Users, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import heroHealthcare from '@/assets/hero-healthcare.jpg';
+import doctorEmilyAvatar from '@/assets/avatars/doctor-emily.jpg';
+import patientMichaelAvatar from '@/assets/avatars/patient-michael.jpg';
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -94,9 +97,11 @@ const Hero = () => {
                     <p className="text-sm text-muted-foreground">Welcome back,</p>
                     <h3 className="text-lg font-semibold">Dr. Emily Carter</h3>
                   </div>
-                  <div className="w-12 h-12 rounded-full gradient-bg-hero flex items-center justify-center text-white font-semibold">
-                    EC
-                  </div>
+                  <img 
+                    src={doctorEmilyAvatar} 
+                    alt="Dr. Emily Carter" 
+                    className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20"
+                  />
                 </div>
 
                 {/* Stats Grid */}
@@ -115,9 +120,11 @@ const Hero = () => {
                 <div className="space-y-3">
                   <p className="text-sm font-medium text-muted-foreground">Next Appointment</p>
                   <div className="flex items-center gap-4 p-3 bg-accent/30 rounded-xl border border-primary/10">
-                    <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-medium text-sm">
-                      MT
-                    </div>
+                    <img 
+                      src={patientMichaelAvatar} 
+                      alt="Michael Thompson" 
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
                     <div className="flex-1">
                       <p className="font-medium">Michael Thompson</p>
                       <p className="text-sm text-muted-foreground">Follow-up • 10:30 AM</p>

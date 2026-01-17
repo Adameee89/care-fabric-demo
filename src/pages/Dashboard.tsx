@@ -15,6 +15,7 @@ import { AdminAnalyticsDashboard } from '@/components/admin/AdminAnalyticsDashbo
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getPatientPrescriptions, getPatientLabResults, notifications, patients, doctors } from '@/data/mockData';
 import { Heart } from 'lucide-react';
+import { UserAvatar } from '@/components/UserAvatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -95,9 +96,13 @@ const Dashboard = () => {
               )}
             </button>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-medium text-primary">
-                {user.firstName[0]}{user.lastName[0]}
-              </div>
+              <UserAvatar 
+                userId={user.id} 
+                firstName={user.firstName} 
+                lastName={user.lastName}
+                size="md"
+                editable
+              />
               <div>
                 <p className="text-sm font-medium">{user.firstName} {user.lastName}</p>
                 <p className="text-xs text-muted-foreground capitalize">{t(`common.${user.role}`)}</p>
@@ -122,17 +127,24 @@ const Dashboard = () => {
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-medium text-primary text-sm">
-                    {user.firstName[0]}{user.lastName[0]}
-                  </div>
+                  <UserAvatar 
+                    userId={user.id} 
+                    firstName={user.firstName} 
+                    lastName={user.lastName}
+                    size="sm"
+                  />
                 </button>
               </SheetTrigger>
               <SheetContent side="right" className="w-72">
                 <SheetHeader className="text-left pb-4 border-b border-border">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center font-medium text-primary">
-                      {user.firstName[0]}{user.lastName[0]}
-                    </div>
+                    <UserAvatar 
+                      userId={user.id} 
+                      firstName={user.firstName} 
+                      lastName={user.lastName}
+                      size="lg"
+                      editable
+                    />
                     <div>
                       <SheetTitle className="text-base">{user.firstName} {user.lastName}</SheetTitle>
                       <p className="text-sm text-muted-foreground capitalize">{t(`common.${user.role}`)}</p>

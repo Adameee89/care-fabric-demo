@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import heroHealthcare from '@/assets/hero-healthcare.jpg';
 
 const CTA = () => {
   const navigate = useNavigate();
@@ -15,7 +16,14 @@ const CTA = () => {
   return (
     <section className="py-24 relative overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 gradient-bg-dark" />
+      <div className="absolute inset-0">
+        <img 
+          src={heroHealthcare} 
+          alt="Healthcare technology" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-foreground/95 to-foreground/80" />
+      </div>
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-info/20 rounded-full blur-3xl" />
