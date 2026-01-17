@@ -133,15 +133,25 @@ export const DoctorAppointmentsView = ({ doctorId }: Props) => {
         </Select>
       </div>
 
-      <Tabs defaultValue="today">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="today" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />{t('appointments.todayAppointments')} ({todayAppts.length})
+      <Tabs defaultValue="today" className="w-full">
+        <TabsList className="w-full h-auto flex-wrap gap-1 p-1">
+          <TabsTrigger value="today" className="flex-1 min-w-fit text-xs sm:text-sm px-2 py-1.5">
+            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+            <span className="hidden sm:inline">{t('appointments.todayAppointments')}</span>
+            <span className="sm:hidden">Today</span>
+            <span className="ml-1">({todayAppts.length})</span>
           </TabsTrigger>
-          <TabsTrigger value="upcoming">
-            <Clock className="h-4 w-4 mr-2" />{t('appointments.upcomingAppointments')} ({upcomingAppts.length})
+          <TabsTrigger value="upcoming" className="flex-1 min-w-fit text-xs sm:text-sm px-2 py-1.5">
+            <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+            <span className="hidden sm:inline">{t('appointments.upcomingAppointments')}</span>
+            <span className="sm:hidden">Upcoming</span>
+            <span className="ml-1">({upcomingAppts.length})</span>
           </TabsTrigger>
-          <TabsTrigger value="past">{t('appointments.pastAppointments')} ({pastAppts.length})</TabsTrigger>
+          <TabsTrigger value="past" className="flex-1 min-w-fit text-xs sm:text-sm px-2 py-1.5">
+            <span className="hidden sm:inline">{t('appointments.pastAppointments')}</span>
+            <span className="sm:hidden">Past</span>
+            <span className="ml-1">({pastAppts.length})</span>
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="today" className="mt-4">{renderTable(filterAppointments(todayAppts), true)}</TabsContent>
         <TabsContent value="upcoming" className="mt-4">{renderTable(filterAppointments(upcomingAppts))}</TabsContent>
