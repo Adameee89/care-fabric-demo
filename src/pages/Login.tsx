@@ -3,13 +3,13 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Heart, User, Stethoscope, Shield, ArrowLeft, Smartphone, CheckCircle2, Loader2, Search, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserManagement } from '@/contexts/UserManagementContext';
 import { UserRole } from '@/data/mockData';
 import { SystemUser } from '@/data/usersData';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { UserAvatar } from '@/components/UserAvatar';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -303,11 +303,12 @@ const Login = () => {
                         onClick={() => handleUserSelect(user)}
                         className="w-full p-3 rounded-lg hover:bg-muted text-left transition-colors flex items-center gap-3"
                       >
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-medium text-primary">
-                            {user.firstName[0]}{user.lastName[0]}
-                          </span>
-                        </div>
+                        <UserAvatar 
+                          userId={user.linkedEntityId || user.id}
+                          firstName={user.firstName}
+                          lastName={user.lastName}
+                          size="md"
+                        />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <p className="font-medium truncate">
