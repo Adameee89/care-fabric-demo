@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useUserManagement } from '@/contexts/UserManagementContext';
-import { useEnterpriseAuth } from '@/contexts/EnterpriseAuthContext';
+import { useEnterpriseAuthSafe } from '@/contexts/EnterpriseAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { SystemUser, UserRole, formatUserFullName } from '@/data/usersData';
 import {
   AlertDialog,
@@ -35,7 +36,21 @@ export const RoleChangeDialog: React.FC<RoleChangeDialogProps> = ({
   onOpenChange,
 }) => {
   const { updateUserRole, canChangeRole, addAuditEntry } = useUserManagement();
-  const { currentUser } = useEnterpriseAuth();
+  const { currentUser: enterpriseUser } = useEnterpriseAuthSafe();
+  const { user: authUser } = useAuth();
+  
+  // Bridge between old auth and enterprise auth
+  const currentUser = enterpriseUser || (authUser ? {
+    id: authUser.id,
+    firstName: authUser.firstName,
+    lastName: authUser.lastName,
+    email: authUser.email,
+    role: authUser.role.toUpperCase() as 'ADMIN' | 'DOCTOR' | 'PATIENT',
+    status: 'ACTIVE' as const,
+    createdAt: new Date().toISOString(),
+    lastLoginAt: new Date().toISOString(),
+    linkedEntityId: null,
+  } : null);
   const [selectedRole, setSelectedRole] = useState<UserRole>(user.role);
 
   const validation = canChangeRole(user.id, selectedRole);

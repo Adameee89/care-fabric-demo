@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useUserManagement } from '@/contexts/UserManagementContext';
-import { useEnterpriseAuth } from '@/contexts/EnterpriseAuthContext';
+import { useEnterpriseAuthSafe } from '@/contexts/EnterpriseAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { SystemUser, UserRole, UserStatus, formatUserFullName } from '@/data/usersData';
 import {
   Table,
@@ -52,7 +53,21 @@ type SortDirection = 'asc' | 'desc';
 
 export const UserManagementTable: React.FC = () => {
   const { users, addAuditEntry, resetUserSession } = useUserManagement();
-  const { currentUser, impersonate } = useEnterpriseAuth();
+  const { currentUser: enterpriseUser, impersonate } = useEnterpriseAuthSafe();
+  const { user: authUser } = useAuth();
+  
+  // Bridge between old auth and enterprise auth - create a compatible current user object
+  const currentUser = enterpriseUser || (authUser ? {
+    id: authUser.id,
+    firstName: authUser.firstName,
+    lastName: authUser.lastName,
+    email: authUser.email,
+    role: authUser.role.toUpperCase() as 'ADMIN' | 'DOCTOR' | 'PATIENT',
+    status: 'ACTIVE' as const,
+    createdAt: new Date().toISOString(),
+    lastLoginAt: new Date().toISOString(),
+    linkedEntityId: null,
+  } : null);
   
   // Table state
   const [searchQuery, setSearchQuery] = useState('');
