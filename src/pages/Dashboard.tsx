@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEnterpriseAuthSafe } from '@/contexts/EnterpriseAuthContext';
 import { useAppointments } from '@/contexts/AppointmentContext';
-import { Calendar, FileText, Pill, Bell, Activity, Plus, Menu, LogOut, Settings, Globe, Sun, Moon, Users } from 'lucide-react';
+import { Calendar, FileText, Pill, Bell, Activity, Plus, Menu, LogOut, Settings, Globe, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -12,7 +12,7 @@ import { BookAppointmentForm } from '@/components/appointments/BookAppointmentFo
 import { PatientAppointmentList } from '@/components/appointments/PatientAppointmentList';
 import { DoctorAppointmentInbox } from '@/components/appointments/DoctorAppointmentInbox';
 import { DoctorAppointmentsView } from '@/components/doctor/DoctorAppointmentsView';
-import { AdminAnalyticsDashboard } from '@/components/admin/AdminAnalyticsDashboard';
+import { AdminDashboardTabs } from '@/components/admin/AdminDashboardTabs';
 import { ImpersonationBanner } from '@/components/admin/ImpersonationBanner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getPatientPrescriptions, getPatientLabResults, notifications, patients, doctors } from '@/data/mockData';
@@ -114,12 +114,6 @@ const Dashboard = () => {
                 <p className="text-xs text-muted-foreground capitalize">{t(`common.${user.role}`)}</p>
               </div>
             </div>
-            {isAdmin && (
-              <Button variant="outline" size="sm" onClick={() => navigate('/admin/users')}>
-                <Users className="w-4 h-4 mr-2" />
-                Users
-              </Button>
-            )}
             <Button variant="ghost" size="sm" onClick={logout}>{t('common.logout')}</Button>
           </div>
 
@@ -316,7 +310,7 @@ const Dashboard = () => {
           </Tabs>
         )}
 
-        {user.role === 'admin' && <AdminAnalyticsDashboard />}
+        {user.role === 'admin' && <AdminDashboardTabs />}
 
         <div className="mt-8 p-4 rounded-xl bg-warning/10 border border-warning/20 text-center">
           <p className="text-sm text-warning">
