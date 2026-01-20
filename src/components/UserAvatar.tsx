@@ -49,11 +49,11 @@ export const defaultAvatars: Record<string, string> = {
   'admin_01': adminDefaultAvatar,
 };
 
-// Generate a deterministic avatar URL for users without a specific avatar
+// Generate a deterministic realistic avatar URL for users without a specific avatar
 const generateAvatarUrl = (userId: string, firstName: string, lastName: string): string => {
-  // Use DiceBear API with the "avataaars" style for consistent, unique avatars
+  // Use pravatar.cc for consistent, realistic human photos
   const seed = `${userId}-${firstName}-${lastName}`;
-  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+  return `https://i.pravatar.cc/150?u=${encodeURIComponent(seed)}`;
 };
 
 interface UserAvatarProps {
