@@ -3,16 +3,58 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Camera } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Default avatar imports
+// Default avatar imports - mapped to specific user IDs
 import patientMichaelAvatar from '@/assets/avatars/patient-michael.jpg';
 import doctorEmilyAvatar from '@/assets/avatars/doctor-emily.jpg';
+import doctorJamesAvatar from '@/assets/avatars/doctor-james.jpg';
+import doctorJamesSAvatar from '@/assets/avatars/doctor-james-s.jpg';
+import doctorSarahAvatar from '@/assets/avatars/doctor-sarah.jpg';
+import doctorJohnAvatar from '@/assets/avatars/doctor-john.jpg';
+import doctorMaryAvatar from '@/assets/avatars/doctor-mary.jpg';
+import doctorPatriciaAvatar from '@/assets/avatars/doctor-patricia.jpg';
+import doctorRobertAvatar from '@/assets/avatars/doctor-robert.jpg';
 import adminDefaultAvatar from '@/assets/avatars/admin-default.jpg';
+import testimonialEmilyAvatar from '@/assets/avatars/testimonial-emily-w.jpg';
+import testimonialJamesAvatar from '@/assets/avatars/testimonial-james.jpg';
+import testimonialLisaAvatar from '@/assets/avatars/testimonial-lisa.jpg';
+import testimonialMichaelAvatar from '@/assets/avatars/testimonial-michael.jpg';
+import testimonialRobertAvatar from '@/assets/avatars/testimonial-robert.jpg';
+import testimonialSarahAvatar from '@/assets/avatars/testimonial-sarah.jpg';
 
-export const defaultAvatars = {
+// Map user IDs to their avatars
+export const defaultAvatars: Record<string, string> = {
+  // Patient - linked entity IDs
   'pat_042': patientMichaelAvatar,
+  
+  // Doctors - linked entity IDs (doc_001 to doc_020)
   'doc_001': doctorEmilyAvatar,
+  'doc_002': doctorJamesAvatar,
+  'doc_003': doctorSarahAvatar,
+  'doc_004': testimonialMichaelAvatar,
+  'doc_005': testimonialJamesAvatar,
+  'doc_006': doctorMaryAvatar,
+  'doc_007': testimonialLisaAvatar,
+  'doc_008': doctorRobertAvatar,
+  'doc_009': testimonialEmilyAvatar,
+  'doc_010': doctorJohnAvatar,
+  'doc_011': testimonialSarahAvatar,
+  'doc_012': doctorJamesSAvatar,
+  'doc_013': testimonialRobertAvatar,
+  'doc_014': doctorPatriciaAvatar,
+  
+  // Admin user IDs
+  'usr_admin_001': adminDefaultAvatar,
+  'usr_admin_002': testimonialEmilyAvatar,
+  'usr_admin_003': testimonialRobertAvatar,
   'admin_01': adminDefaultAvatar,
-} as const;
+};
+
+// Generate a deterministic avatar URL for users without a specific avatar
+const generateAvatarUrl = (userId: string, firstName: string, lastName: string): string => {
+  // Use DiceBear API with the "avataaars" style for consistent, unique avatars
+  const seed = `${userId}-${firstName}-${lastName}`;
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+};
 
 interface UserAvatarProps {
   userId: string;
@@ -56,9 +98,11 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     }
   }, [userId]);
 
-  const defaultAvatar = defaultAvatars[userId as keyof typeof defaultAvatars];
-  const avatarSrc = customAvatar || defaultAvatar;
-  const initials = `${firstName[0]}${lastName[0]}`;
+  // Check for default avatar, otherwise generate one
+  const defaultAvatar = defaultAvatars[userId];
+  const generatedAvatar = !defaultAvatar ? generateAvatarUrl(userId, firstName, lastName) : null;
+  const avatarSrc = customAvatar || defaultAvatar || generatedAvatar;
+  const initials = `${firstName[0] || ''}${lastName[0] || ''}`;
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
