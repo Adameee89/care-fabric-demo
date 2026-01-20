@@ -1,6 +1,7 @@
 import React from 'react';
 import { useUserManagement } from '@/contexts/UserManagementContext';
-import { useEnterpriseAuth } from '@/contexts/EnterpriseAuthContext';
+import { useEnterpriseAuthSafe } from '@/contexts/EnterpriseAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { SystemUser, formatUserFullName } from '@/data/usersData';
 import {
   AlertDialog,
@@ -27,7 +28,21 @@ export const StatusChangeDialog: React.FC<StatusChangeDialogProps> = ({
   onOpenChange,
 }) => {
   const { updateUserStatus, canDeactivateUser, addAuditEntry } = useUserManagement();
-  const { currentUser } = useEnterpriseAuth();
+  const { currentUser: enterpriseUser } = useEnterpriseAuthSafe();
+  const { user: authUser } = useAuth();
+  
+  // Bridge between old auth and enterprise auth
+  const currentUser = enterpriseUser || (authUser ? {
+    id: authUser.id,
+    firstName: authUser.firstName,
+    lastName: authUser.lastName,
+    email: authUser.email,
+    role: authUser.role.toUpperCase() as 'ADMIN' | 'DOCTOR' | 'PATIENT',
+    status: 'ACTIVE' as const,
+    createdAt: new Date().toISOString(),
+    lastLoginAt: new Date().toISOString(),
+    linkedEntityId: null,
+  } : null);
 
   const isActivating = user.status === 'INACTIVE';
   const newStatus = isActivating ? 'ACTIVE' : 'INACTIVE';

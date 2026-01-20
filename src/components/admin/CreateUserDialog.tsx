@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useUserManagement } from '@/contexts/UserManagementContext';
-import { useEnterpriseAuth } from '@/contexts/EnterpriseAuthContext';
+import { useEnterpriseAuthSafe } from '@/contexts/EnterpriseAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { UserRole, UserStatus, formatUserFullName } from '@/data/usersData';
 import {
   Dialog,
@@ -34,7 +35,21 @@ export const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   onOpenChange,
 }) => {
   const { createUser, getUserByEmail, addAuditEntry } = useUserManagement();
-  const { currentUser } = useEnterpriseAuth();
+  const { currentUser: enterpriseUser } = useEnterpriseAuthSafe();
+  const { user: authUser } = useAuth();
+  
+  // Bridge between old auth and enterprise auth
+  const currentUser = enterpriseUser || (authUser ? {
+    id: authUser.id,
+    firstName: authUser.firstName,
+    lastName: authUser.lastName,
+    email: authUser.email,
+    role: authUser.role.toUpperCase() as 'ADMIN' | 'DOCTOR' | 'PATIENT',
+    status: 'ACTIVE' as const,
+    createdAt: new Date().toISOString(),
+    lastLoginAt: new Date().toISOString(),
+    linkedEntityId: null,
+  } : null);
   
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
