@@ -293,7 +293,7 @@ export const UserManagementTable: React.FC = () => {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <UserAvatar
-                        userId={user.linkedEntityId || user.id}
+                        userId={user.id}
                         firstName={user.firstName}
                         lastName={user.lastName}
                         size="sm"
