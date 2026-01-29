@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { useAppointments } from '@/contexts/AppointmentContext';
+import { useMedicalProfile } from '@/contexts/MedicalProfileContext';
 import { ExtendedAppointment, DeclineReason, declineReasonLabels, availableTimeSlots } from '@/data/appointmentData';
 import { AppointmentStatusBadge } from './AppointmentStatusBadge';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/UserAvatar';
+import { PatientProfileViewer } from '@/components/doctor/PatientProfileViewer';
 import { patients } from '@/data/mockData';
-import { Calendar, Clock, User, Check, X, RefreshCw, AlertTriangle, Loader2 } from 'lucide-react';
+import { systemUsers } from '@/data/usersData';
+import { Calendar, Clock, User, Check, X, RefreshCw, AlertTriangle, Loader2, Info, Heart } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { format, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -19,6 +23,7 @@ interface DoctorAppointmentInboxProps {
 
 export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps) => {
   const { getPendingForDoctor, acceptAppointment, declineAppointment, proposeReschedule, isLoading } = useAppointments();
+  const { getProfileByUserId } = useMedicalProfile();
   
   const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
   const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
@@ -29,8 +34,17 @@ export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps
   const [declineNotes, setDeclineNotes] = useState('');
   const [rescheduleDate, setRescheduleDate] = useState<Date | undefined>();
   const [rescheduleTime, setRescheduleTime] = useState('');
+  const [profileViewerOpen, setProfileViewerOpen] = useState(false);
+  const [viewingPatient, setViewingPatient] = useState<{ id: string; name: string } | null>(null);
   
   const pendingAppointments = getPendingForDoctor(doctorId);
+  
+  // Helper to find patient user ID from linked entity
+  const findPatientUserId = (patientId: string): string | null => {
+    // Try to find in systemUsers by linkedEntityId
+    const user = systemUsers.find(u => u.linkedEntityId === patientId);
+    return user?.id || patientId;
+  };
   
   const handleAccept = async () => {
     if (!selectedAppointment) return;
@@ -55,6 +69,12 @@ export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps
     setSelectedAppointment(null);
   };
   
+  const handleViewProfile = (patientId: string, patientName: string) => {
+    const userId = findPatientUserId(patientId);
+    setViewingPatient({ id: userId || patientId, name: patientName });
+    setProfileViewerOpen(true);
+  };
+  
   if (pendingAppointments.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -71,32 +91,68 @@ export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps
         <h3 className="font-semibold">Pending Requests ({pendingAppointments.length})</h3>
       </div>
       
-      {pendingAppointments.map((apt) => (
-        <div key={apt.id} className="glass-card rounded-xl p-4">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex items-center gap-3">
-              {(() => {
-                const patient = patients.find(p => p.id === apt.patientId);
-                return patient ? (
-                  <UserAvatar 
-                    userId={patient.id}
-                    firstName={patient.firstName}
-                    lastName={patient.lastName}
-                    size="md"
-                  />
+      {/* Patient Profile Viewer */}
+      <PatientProfileViewer
+        open={profileViewerOpen}
+        onOpenChange={setProfileViewerOpen}
+        profile={viewingPatient ? getProfileByUserId(viewingPatient.id) : null}
+        patientId={viewingPatient?.id || ''}
+        patientName={viewingPatient?.name || ''}
+      />
+      
+      {pendingAppointments.map((apt) => {
+        const patient = patients.find(p => p.id === apt.patientId);
+        const patientUserId = findPatientUserId(apt.patientId);
+        const hasProfile = patientUserId ? !!getProfileByUserId(patientUserId) : false;
+        
+        return (
+          <div key={apt.id} className="glass-card rounded-xl p-4">
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3">
+                {patient ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button 
+                        onClick={() => handleViewProfile(apt.patientId, apt.patientName)}
+                        className="relative group"
+                      >
+                        <UserAvatar 
+                          userId={patient.id}
+                          firstName={patient.firstName}
+                          lastName={patient.lastName}
+                          size="md"
+                        />
+                        <div className="absolute inset-0 rounded-full bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Info className="h-4 w-4 text-primary" />
+                        </div>
+                        {hasProfile && (
+                          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-success flex items-center justify-center">
+                            <Heart className="h-2.5 w-2.5 text-success-foreground" />
+                          </div>
+                        )}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>View patient profile</p>
+                    </TooltipContent>
+                  </Tooltip>
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <User className="w-5 h-5 text-primary" />
                   </div>
-                );
-              })()}
-              <div>
-                <h4 className="font-medium">{apt.patientName}</h4>
-                <p className="text-sm text-muted-foreground">{apt.appointmentType}</p>
+                )}
+                <div>
+                  <button 
+                    className="font-medium hover:text-primary hover:underline transition-colors text-left"
+                    onClick={() => handleViewProfile(apt.patientId, apt.patientName)}
+                  >
+                    {apt.patientName}
+                  </button>
+                  <p className="text-sm text-muted-foreground">{apt.appointmentType}</p>
+                </div>
               </div>
+              <AppointmentStatusBadge status={apt.status} size="sm" />
             </div>
-            <AppointmentStatusBadge status={apt.status} size="sm" />
-          </div>
           
           <p className="text-sm mb-3 p-2 rounded bg-muted/50">{apt.reason}</p>
           
@@ -119,8 +175,9 @@ export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps
               <X className="w-4 h-4 mr-1" /> Decline
             </Button>
           </div>
-        </div>
-      ))}
+          </div>
+        );
+      })}
       
       {/* Accept Dialog */}
       <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>

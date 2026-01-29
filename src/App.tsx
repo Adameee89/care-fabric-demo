@@ -10,6 +10,7 @@ import { EnterpriseAuthProvider } from "@/contexts/EnterpriseAuthContext";
 import { UserManagementProvider } from "@/contexts/UserManagementContext";
 import { AppointmentProvider } from "@/contexts/AppointmentContext";
 import { AIChatProvider } from "@/contexts/AIChatContext";
+import { MedicalProfileProvider } from "@/contexts/MedicalProfileContext";
 import FloatingAssistant from "@/components/ai-assistant/FloatingAssistant";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -31,9 +32,10 @@ const App = () => (
       <UserManagementProvider>
         <EnterpriseAuthProvider>
           <AuthProvider>
-            <AppointmentProvider>
-              <AIChatProvider>
-                <TooltipProvider>
+            <MedicalProfileProvider>
+              <AppointmentProvider>
+                <AIChatProvider>
+                  <TooltipProvider>
                   <Toaster />
                   <Sonner />
                   <BrowserRouter>
@@ -52,9 +54,10 @@ const App = () => (
                     </Routes>
                     <FloatingAssistant />
                   </BrowserRouter>
-                </TooltipProvider>
-              </AIChatProvider>
-            </AppointmentProvider>
+                  </TooltipProvider>
+                </AIChatProvider>
+              </AppointmentProvider>
+            </MedicalProfileProvider>
           </AuthProvider>
         </EnterpriseAuthProvider>
       </UserManagementProvider>
