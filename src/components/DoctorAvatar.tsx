@@ -1,6 +1,7 @@
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { generateGenderedAvatarUrl } from '@/lib/avatarUtils';
 
 // Import doctor avatars
 import doctorEmilyAvatar from '@/assets/avatars/doctor-emily.jpg';
@@ -13,31 +14,16 @@ import doctorPatriciaAvatar from '@/assets/avatars/doctor-patricia.jpg';
 import doctorRobertAvatar from '@/assets/avatars/doctor-robert.jpg';
 
 // Map doctor IDs to their avatar images
-// doc_001: Dr. Emily Carter - Internal Medicine
-// doc_002: Dr. James Wilson - Cardiology
-// doc_003: Dr. Sarah Chen - Dermatology
-// doc_004: Dr. James Smith - Internal Medicine (generated)
-// doc_005: Dr. Mary Johnson - Pediatrics (generated)
-// doc_006: Dr. John Williams - Orthopedics (generated)
-// doc_007: Dr. Patricia Brown - Neurology (generated)
-// doc_008: Dr. Robert Jones - Psychiatry (generated)
+// Curated professional doctor photos for first 8 doctors
 export const doctorAvatars: Record<string, string> = {
-  'doc_001': doctorEmilyAvatar,
-  'doc_002': doctorJamesAvatar,
-  'doc_003': doctorSarahAvatar,
-  'doc_004': doctorJamesSAvatar,
-  'doc_005': doctorMaryAvatar,
-  'doc_006': doctorJohnAvatar,
-  'doc_007': doctorPatriciaAvatar,
-  'doc_008': doctorRobertAvatar,
-  // For remaining doctors, we'll use a rotation of existing avatars
-  'doc_009': doctorEmilyAvatar,
-  'doc_010': doctorJamesAvatar,
-  'doc_011': doctorSarahAvatar,
-  'doc_012': doctorJamesSAvatar,
-  'doc_013': doctorMaryAvatar,
-  'doc_014': doctorJohnAvatar,
-  'doc_015': doctorPatriciaAvatar,
+  'doc_001': doctorEmilyAvatar,    // Dr. Emily Carter - Internal Medicine (Female)
+  'doc_002': doctorJamesAvatar,    // Dr. James Wilson - Cardiology (Male)
+  'doc_003': doctorSarahAvatar,    // Dr. Sarah Chen - Dermatology (Female)
+  'doc_004': doctorJamesSAvatar,   // Dr. Michael Rodriguez - (Male)
+  'doc_005': doctorMaryAvatar,     // Dr. Jennifer Patel (Female)
+  'doc_006': doctorJohnAvatar,     // Dr. David Kim (Male)
+  'doc_007': doctorPatriciaAvatar, // Dr. Lisa Thompson (Female)
+  'doc_008': doctorRobertAvatar,   // Dr. Robert Garcia (Male)
 };
 
 interface DoctorAvatarProps {
@@ -62,14 +48,16 @@ export const DoctorAvatar: React.FC<DoctorAvatarProps> = ({
   size = 'md',
   className,
 }) => {
-  const avatarSrc = doctorAvatars[doctorId];
+  // First check curated doctor avatars
+  const curatedAvatar = doctorAvatars[doctorId];
+  
+  // If no curated avatar, generate a gender-appropriate one
+  const avatarSrc = curatedAvatar || generateGenderedAvatarUrl(doctorId, firstName, lastName);
   const initials = `${firstName[0]}${lastName[0]}`;
 
   return (
     <Avatar className={cn(sizeClasses[size], className)}>
-      {avatarSrc ? (
-        <AvatarImage src={avatarSrc} alt={`Dr. ${firstName} ${lastName}`} className="object-cover" />
-      ) : null}
+      <AvatarImage src={avatarSrc} alt={`Dr. ${firstName} ${lastName}`} className="object-cover" />
       <AvatarFallback className="bg-primary/10 text-primary font-semibold">
         {initials}
       </AvatarFallback>

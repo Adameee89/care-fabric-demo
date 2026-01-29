@@ -106,6 +106,7 @@ const Dashboard = () => {
                 userId={user.id} 
                 firstName={user.firstName} 
                 lastName={user.lastName}
+                linkedEntityId={user.linkedEntityId}
                 size="md"
                 editable
               />
@@ -137,6 +138,7 @@ const Dashboard = () => {
                     userId={user.id} 
                     firstName={user.firstName} 
                     lastName={user.lastName}
+                    linkedEntityId={user.linkedEntityId}
                     size="sm"
                   />
                 </button>
@@ -148,6 +150,7 @@ const Dashboard = () => {
                       userId={user.id} 
                       firstName={user.firstName} 
                       lastName={user.lastName}
+                      linkedEntityId={user.linkedEntityId}
                       size="lg"
                       editable
                     />
