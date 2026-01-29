@@ -304,7 +304,7 @@ const Login = () => {
                         className="w-full p-3 rounded-lg hover:bg-muted text-left transition-colors flex items-center gap-3"
                       >
                         <UserAvatar 
-                          userId={user.linkedEntityId || user.id}
+                          userId={user.id}
                           firstName={user.firstName}
                           lastName={user.lastName}
                           size="md"
