@@ -307,6 +307,7 @@ const Login = () => {
                           userId={user.id}
                           firstName={user.firstName}
                           lastName={user.lastName}
+                          linkedEntityId={user.linkedEntityId}
                           size="md"
                         />
                         <div className="flex-1 min-w-0">

@@ -12,6 +12,7 @@ export interface User {
   firstName: string;
   lastName: string;
   avatar?: string;
+  linkedEntityId?: string | null;
   createdAt: string;
 }
 

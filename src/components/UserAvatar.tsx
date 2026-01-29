@@ -2,45 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Camera } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { generateGenderedAvatarUrl, isDoctorId, getLinkedEntityId } from '@/lib/avatarUtils';
+import { doctorAvatars } from '@/components/DoctorAvatar';
 
 // Default avatar imports - mapped to specific user IDs
 import patientMichaelAvatar from '@/assets/avatars/patient-michael.jpg';
-import doctorEmilyAvatar from '@/assets/avatars/doctor-emily.jpg';
-import doctorJamesAvatar from '@/assets/avatars/doctor-james.jpg';
-import doctorJamesSAvatar from '@/assets/avatars/doctor-james-s.jpg';
-import doctorSarahAvatar from '@/assets/avatars/doctor-sarah.jpg';
-import doctorJohnAvatar from '@/assets/avatars/doctor-john.jpg';
-import doctorMaryAvatar from '@/assets/avatars/doctor-mary.jpg';
-import doctorPatriciaAvatar from '@/assets/avatars/doctor-patricia.jpg';
-import doctorRobertAvatar from '@/assets/avatars/doctor-robert.jpg';
 import adminDefaultAvatar from '@/assets/avatars/admin-default.jpg';
 import testimonialEmilyAvatar from '@/assets/avatars/testimonial-emily-w.jpg';
-import testimonialJamesAvatar from '@/assets/avatars/testimonial-james.jpg';
-import testimonialLisaAvatar from '@/assets/avatars/testimonial-lisa.jpg';
-import testimonialMichaelAvatar from '@/assets/avatars/testimonial-michael.jpg';
 import testimonialRobertAvatar from '@/assets/avatars/testimonial-robert.jpg';
-import testimonialSarahAvatar from '@/assets/avatars/testimonial-sarah.jpg';
 
-// Map user IDs to their avatars
+// Map user IDs to their avatars (only non-doctor specific ones)
 export const defaultAvatars: Record<string, string> = {
   // Patient - linked entity IDs
   'pat_042': patientMichaelAvatar,
-  
-  // Doctors - linked entity IDs (doc_001 to doc_020)
-  'doc_001': doctorEmilyAvatar,
-  'doc_002': doctorJamesAvatar,
-  'doc_003': doctorSarahAvatar,
-  'doc_004': testimonialMichaelAvatar,
-  'doc_005': testimonialJamesAvatar,
-  'doc_006': doctorMaryAvatar,
-  'doc_007': testimonialLisaAvatar,
-  'doc_008': doctorRobertAvatar,
-  'doc_009': testimonialEmilyAvatar,
-  'doc_010': doctorJohnAvatar,
-  'doc_011': testimonialSarahAvatar,
-  'doc_012': doctorJamesSAvatar,
-  'doc_013': testimonialRobertAvatar,
-  'doc_014': doctorPatriciaAvatar,
   
   // Admin user IDs
   'usr_admin_001': adminDefaultAvatar,
@@ -49,17 +23,11 @@ export const defaultAvatars: Record<string, string> = {
   'admin_01': adminDefaultAvatar,
 };
 
-// Generate a deterministic realistic avatar URL for users without a specific avatar
-const generateAvatarUrl = (userId: string, firstName: string, lastName: string): string => {
-  // Use pravatar.cc for consistent, realistic human photos
-  const seed = `${userId}-${firstName}-${lastName}`;
-  return `https://i.pravatar.cc/150?u=${encodeURIComponent(seed)}`;
-};
-
 interface UserAvatarProps {
   userId: string;
   firstName: string;
   lastName: string;
+  linkedEntityId?: string | null;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   editable?: boolean;
   className?: string;
@@ -79,10 +47,49 @@ const iconSizes = {
   xl: 'w-6 h-6',
 };
 
+/**
+ * Get the appropriate avatar source for a user
+ * Priority: Custom avatar > Doctor avatar > Explicit default > Gender-aware generated
+ */
+const getAvatarSource = (
+  userId: string,
+  firstName: string,
+  lastName: string,
+  linkedEntityId?: string | null,
+  customAvatar?: string | null
+): string => {
+  // 1. Custom uploaded avatar takes priority
+  if (customAvatar) return customAvatar;
+  
+  // 2. Check if this is a doctor - use professional doctor avatars
+  const entityId = getLinkedEntityId(userId, linkedEntityId || null);
+  
+  if (isDoctorId(userId) || isDoctorId(entityId)) {
+    // Check for doctor avatar by entity ID
+    const docAvatar = doctorAvatars[entityId];
+    if (docAvatar) return docAvatar;
+    
+    // Also check by user ID pattern
+    if (userId.startsWith('usr_doc_')) {
+      const num = userId.replace('usr_doc_', '');
+      const docId = `doc_${num}`;
+      if (doctorAvatars[docId]) return doctorAvatars[docId];
+    }
+  }
+  
+  // 3. Check explicit default avatars
+  if (defaultAvatars[userId]) return defaultAvatars[userId];
+  if (linkedEntityId && defaultAvatars[linkedEntityId]) return defaultAvatars[linkedEntityId];
+  
+  // 4. Generate gender-appropriate avatar
+  return generateGenderedAvatarUrl(userId, firstName, lastName);
+};
+
 export const UserAvatar: React.FC<UserAvatarProps> = ({
   userId,
   firstName,
   lastName,
+  linkedEntityId,
   size = 'md',
   editable = false,
   className,
@@ -98,10 +105,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     }
   }, [userId]);
 
-  // Check for default avatar, otherwise generate one
-  const defaultAvatar = defaultAvatars[userId];
-  const generatedAvatar = !defaultAvatar ? generateAvatarUrl(userId, firstName, lastName) : null;
-  const avatarSrc = customAvatar || defaultAvatar || generatedAvatar;
+  const avatarSrc = getAvatarSource(userId, firstName, lastName, linkedEntityId, customAvatar);
   const initials = `${firstName[0] || ''}${lastName[0] || ''}`;
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {

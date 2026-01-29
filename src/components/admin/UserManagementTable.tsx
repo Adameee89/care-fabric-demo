@@ -296,6 +296,7 @@ export const UserManagementTable: React.FC = () => {
                         userId={user.id}
                         firstName={user.firstName}
                         lastName={user.lastName}
+                        linkedEntityId={user.linkedEntityId}
                         size="sm"
                       />
                       <div>

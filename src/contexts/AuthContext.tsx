@@ -49,6 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       lastName: systemUser.lastName,
       email: systemUser.email,
       role: legacyRole,
+      linkedEntityId: systemUser.linkedEntityId,
       createdAt: systemUser.createdAt,
     };
     
