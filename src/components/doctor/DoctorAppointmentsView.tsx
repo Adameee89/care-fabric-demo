@@ -1,14 +1,18 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppointments } from '@/contexts/AppointmentContext';
+import { useMedicalProfile } from '@/contexts/MedicalProfileContext';
 import { AppointmentStatusBadge } from '@/components/appointments/AppointmentStatusBadge';
+import { PatientProfileViewer } from '@/components/doctor/PatientProfileViewer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, Clock, Search, Filter, CheckCircle, XCircle, Video, User } from 'lucide-react';
-import { ExtendedAppointment, AppointmentStatus } from '@/data/appointmentData';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Calendar, Clock, Search, Filter, CheckCircle, XCircle, Video, User, Heart } from 'lucide-react';
+import { ExtendedAppointment } from '@/data/appointmentData';
+import { systemUsers } from '@/data/usersData';
 
 interface Props {
   doctorId: string;
@@ -17,8 +21,23 @@ interface Props {
 export const DoctorAppointmentsView = ({ doctorId }: Props) => {
   const { t } = useTranslation();
   const { appointments, markAsCompleted, markAsNoShow } = useAppointments();
+  const { getProfileByUserId } = useMedicalProfile();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [profileViewerOpen, setProfileViewerOpen] = useState(false);
+  const [viewingPatient, setViewingPatient] = useState<{ id: string; name: string } | null>(null);
+
+  // Helper to find patient user ID from linked entity
+  const findPatientUserId = (patientId: string): string | null => {
+    const user = systemUsers.find(u => u.linkedEntityId === patientId);
+    return user?.id || patientId;
+  };
+
+  const handleViewProfile = (patientId: string, patientName: string) => {
+    const userId = findPatientUserId(patientId);
+    setViewingPatient({ id: userId || patientId, name: patientName });
+    setProfileViewerOpen(true);
+  };
 
   const doctorAppointments = useMemo(() => 
     appointments.filter(a => a.doctorId === doctorId), [appointments, doctorId]);
@@ -79,37 +98,57 @@ export const DoctorAppointmentsView = ({ doctorId }: Props) => {
                 {t('appointments.noAppointments')}
               </TableCell>
             </TableRow>
-          ) : appts.map(apt => (
-            <TableRow key={apt.id}>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  {apt.isVirtual ? <Video className="h-4 w-4 text-info" /> : <User className="h-4 w-4" />}
-                  <span className="font-medium">{apt.patientName}</span>
-                </div>
-              </TableCell>
-              <TableCell>{t(`appointments.types.${apt.appointmentType}` as any, apt.appointmentType)}</TableCell>
-              <TableCell>{apt.confirmedSlot?.date || apt.requestedSlots[0]?.date}</TableCell>
-              <TableCell>{apt.confirmedSlot?.time || apt.requestedSlots[0]?.time}</TableCell>
-              <TableCell>{apt.durationMinutes} {t('time.minutes')}</TableCell>
-              <TableCell><AppointmentStatusBadge status={apt.status} /></TableCell>
-              {showActions && (
+          ) : appts.map(apt => {
+            const patientUserId = findPatientUserId(apt.patientId);
+            const hasProfile = patientUserId ? !!getProfileByUserId(patientUserId) : false;
+            
+            return (
+              <TableRow key={apt.id}>
                 <TableCell>
-                  <div className="flex gap-1">
-                    {apt.status === 'Accepted' && (
-                      <>
-                        <Button size="sm" variant="outline" onClick={() => markAsCompleted(apt.id)}>
-                          <CheckCircle className="h-3 w-3 mr-1" />{t('appointments.actions.markCompleted')}
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => markAsNoShow(apt.id)}>
-                          <XCircle className="h-3 w-3 mr-1" />{t('appointments.actions.markNoShow')}
-                        </Button>
-                      </>
-                    )}
+                  <div className="flex items-center gap-2">
+                    {apt.isVirtual ? <Video className="h-4 w-4 text-info" /> : <User className="h-4 w-4" />}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button 
+                          className="font-medium hover:text-primary hover:underline transition-colors flex items-center gap-1"
+                          onClick={() => handleViewProfile(apt.patientId, apt.patientName)}
+                        >
+                          {apt.patientName}
+                          {hasProfile && (
+                            <Heart className="h-3 w-3 text-success fill-success" />
+                          )}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to view patient profile</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </TableCell>
-              )}
-            </TableRow>
-          ))}
+                <TableCell>{t(`appointments.types.${apt.appointmentType}` as any, apt.appointmentType)}</TableCell>
+                <TableCell>{apt.confirmedSlot?.date || apt.requestedSlots[0]?.date}</TableCell>
+                <TableCell>{apt.confirmedSlot?.time || apt.requestedSlots[0]?.time}</TableCell>
+                <TableCell>{apt.durationMinutes} {t('time.minutes')}</TableCell>
+                <TableCell><AppointmentStatusBadge status={apt.status} /></TableCell>
+                {showActions && (
+                  <TableCell>
+                    <div className="flex gap-1">
+                      {apt.status === 'Accepted' && (
+                        <>
+                          <Button size="sm" variant="outline" onClick={() => markAsCompleted(apt.id)}>
+                            <CheckCircle className="h-3 w-3 mr-1" />{t('appointments.actions.markCompleted')}
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => markAsNoShow(apt.id)}>
+                            <XCircle className="h-3 w-3 mr-1" />{t('appointments.actions.markNoShow')}
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </TableCell>
+                )}
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
@@ -117,6 +156,15 @@ export const DoctorAppointmentsView = ({ doctorId }: Props) => {
 
   return (
     <div className="space-y-4">
+      {/* Patient Profile Viewer */}
+      <PatientProfileViewer
+        open={profileViewerOpen}
+        onOpenChange={setProfileViewerOpen}
+        profile={viewingPatient ? getProfileByUserId(viewingPatient.id) : null}
+        patientId={viewingPatient?.id || ''}
+        patientName={viewingPatient?.name || ''}
+      />
+
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

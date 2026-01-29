@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useAppointments } from '@/contexts/AppointmentContext';
+import { useMedicalProfile } from '@/contexts/MedicalProfileContext';
 import { doctors } from '@/data/mockData';
 import { AppointmentType, TimeSlot, availableTimeSlots, appointmentTypeConfig } from '@/data/appointmentData';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { DoctorAvatar } from '@/components/DoctorAvatar';
+import { PatientMedicalProfileForm } from '@/components/patient/PatientMedicalProfileForm';
 import {
   Select,
   SelectContent,
@@ -24,7 +26,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Clock, Video, MapPin, Search, X, Loader2 } from 'lucide-react';
+import { CalendarIcon, Clock, Video, MapPin, Search, X, Loader2, AlertTriangle, Heart } from 'lucide-react';
 import { format, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -46,8 +48,10 @@ const appointmentTypes: AppointmentType[] = [
 
 export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppointmentFormProps) => {
   const { requestAppointment, isLoading } = useAppointments();
+  const { isProfileComplete } = useMedicalProfile();
   
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at 0 for profile check
+  const [profileFormOpen, setProfileFormOpen] = useState(false);
   const [doctorSearch, setDoctorSearch] = useState('');
   const [selectedDoctor, setSelectedDoctor] = useState<string | null>(null);
   const [appointmentType, setAppointmentType] = useState<AppointmentType | null>(null);
@@ -71,7 +75,7 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
   );
   
   const resetForm = () => {
-    setStep(1);
+    setStep(isProfileComplete ? 1 : 0);
     setDoctorSearch('');
     setSelectedDoctor(null);
     setAppointmentType(null);
@@ -80,6 +84,11 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
     setIsVirtual(false);
     setSelectedDates([]);
     setSelectedSlots([]);
+  };
+  
+  // Reset step when profile completion changes
+  const handleProfileComplete = () => {
+    setStep(1);
   };
   
   const handleClose = () => {
@@ -131,6 +140,7 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
   
   const canProceed = () => {
     switch (step) {
+      case 0: return isProfileComplete;
       case 1: return !!selectedDoctor;
       case 2: return !!appointmentType && reason.length >= 10;
       case 3: return selectedSlots.length > 0;
@@ -138,28 +148,80 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
     }
   };
   
+  const getStepTitle = () => {
+    switch (step) {
+      case 0: return 'Complete Medical Profile';
+      case 1: return 'Select Doctor';
+      case 2: return 'Appointment Details';
+      case 3: return 'Choose Time Slots';
+      default: return '';
+    }
+  };
+  
+  const totalSteps = 4; // Including profile step
+  
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl">Book an Appointment</DialogTitle>
-          <DialogDescription>
-            Step {step} of 3: {step === 1 ? 'Select Doctor' : step === 2 ? 'Appointment Details' : 'Choose Time Slots'}
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <PatientMedicalProfileForm 
+        open={profileFormOpen} 
+        onOpenChange={setProfileFormOpen}
+        onComplete={handleProfileComplete}
+      />
+      
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Book an Appointment</DialogTitle>
+            <DialogDescription>
+              Step {step + 1} of {totalSteps}: {getStepTitle()}
+            </DialogDescription>
+          </DialogHeader>
         
-        {/* Progress Bar */}
-        <div className="flex gap-2 mb-6">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className={cn(
-                "h-2 flex-1 rounded-full transition-colors",
-                s <= step ? "bg-primary" : "bg-muted"
-              )}
-            />
-          ))}
-        </div>
+          {/* Progress Bar */}
+          <div className="flex gap-2 mb-6">
+            {[0, 1, 2, 3].map((s) => (
+              <div
+                key={s}
+                className={cn(
+                  "h-2 flex-1 rounded-full transition-colors",
+                  s <= step ? "bg-primary" : "bg-muted"
+                )}
+              />
+            ))}
+          </div>
+          
+          {/* Step 0: Profile Check */}
+          {step === 0 && (
+            <div className="space-y-6 py-8">
+              <div className="flex flex-col items-center text-center">
+                {isProfileComplete ? (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mb-4">
+                      <Heart className="h-8 w-8 text-success" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Profile Complete!</h3>
+                    <p className="text-muted-foreground max-w-[300px]">
+                      Your medical profile is complete. You can proceed to book an appointment.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-warning/10 flex items-center justify-center mb-4">
+                      <AlertTriangle className="h-8 w-8 text-warning" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Complete Your Medical Profile</h3>
+                    <p className="text-muted-foreground max-w-[300px] mb-6">
+                      Before booking an appointment, please complete your medical profile. This helps doctors provide better care.
+                    </p>
+                    <Button onClick={() => setProfileFormOpen(true)}>
+                      <Heart className="h-4 w-4 mr-2" />
+                      Complete Profile
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         
         {/* Step 1: Select Doctor */}
         {step === 1 && (
@@ -388,31 +450,32 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
           </div>
         )}
         
-        <DialogFooter className="flex justify-between sm:justify-between">
-          <div>
-            {step > 1 && (
-              <Button variant="ghost" onClick={() => setStep(step - 1)}>
-                Back
+          <DialogFooter className="flex justify-between sm:justify-between">
+            <div>
+              {step > 0 && (step > 1 || !isProfileComplete) && (
+                <Button variant="ghost" onClick={() => setStep(step - 1)}>
+                  Back
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleClose}>
+                Cancel
               </Button>
-            )}
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleClose}>
-              Cancel
-            </Button>
-            {step < 3 ? (
-              <Button onClick={() => setStep(step + 1)} disabled={!canProceed()}>
-                Continue
-              </Button>
-            ) : (
-              <Button onClick={handleSubmit} disabled={!canProceed() || isLoading}>
-                {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Submit Request
-              </Button>
-            )}
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              {step < 3 ? (
+                <Button onClick={() => setStep(step + 1)} disabled={!canProceed()}>
+                  Continue
+                </Button>
+              ) : (
+                <Button onClick={handleSubmit} disabled={!canProceed() || isLoading}>
+                  {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  Submit Request
+                </Button>
+              )}
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
