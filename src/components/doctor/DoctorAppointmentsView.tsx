@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppointments } from '@/contexts/AppointmentContext';
 import { useMedicalProfile } from '@/contexts/MedicalProfileContext';
+import { useAppointmentNotifications } from '@/hooks/useAppointmentNotifications';
 import { AppointmentStatusBadge } from '@/components/appointments/AppointmentStatusBadge';
 import { PatientProfileViewer } from '@/components/doctor/PatientProfileViewer';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Calendar, Clock, Search, Filter, CheckCircle, XCircle, Video, User, Heart } from 'lucide-react';
 import { ExtendedAppointment } from '@/data/appointmentData';
 import { systemUsers } from '@/data/usersData';
+import { doctors } from '@/data/mockData';
 
 interface Props {
   doctorId: string;
@@ -22,10 +24,14 @@ export const DoctorAppointmentsView = ({ doctorId }: Props) => {
   const { t } = useTranslation();
   const { appointments, markAsCompleted, markAsNoShow } = useAppointments();
   const { getProfileByUserId } = useMedicalProfile();
+  const { sendNotification } = useAppointmentNotifications();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [profileViewerOpen, setProfileViewerOpen] = useState(false);
   const [viewingPatient, setViewingPatient] = useState<{ id: string; name: string } | null>(null);
+  
+  // Get doctor info for notifications
+  const doctor = doctors.find(d => d.id === doctorId);
 
   // Helper to find patient user ID from linked entity
   const findPatientUserId = (patientId: string): string | null => {
@@ -37,6 +43,32 @@ export const DoctorAppointmentsView = ({ doctorId }: Props) => {
     const userId = findPatientUserId(patientId);
     setViewingPatient({ id: userId || patientId, name: patientName });
     setProfileViewerOpen(true);
+  };
+  
+  const handleMarkCompleted = async (apt: ExtendedAppointment) => {
+    const success = await markAsCompleted(apt.id);
+    if (success && doctor) {
+      sendNotification('complete', {
+        appointmentId: apt.id,
+        patientId: apt.patientId,
+        patientName: apt.patientName,
+        doctorId: apt.doctorId,
+        doctorName: doctor.name,
+      });
+    }
+  };
+  
+  const handleMarkNoShow = async (apt: ExtendedAppointment) => {
+    const success = await markAsNoShow(apt.id);
+    if (success && doctor) {
+      sendNotification('noshow', {
+        appointmentId: apt.id,
+        patientId: apt.patientId,
+        patientName: apt.patientName,
+        doctorId: apt.doctorId,
+        doctorName: doctor.name,
+      });
+    }
   };
 
   const doctorAppointments = useMemo(() => 
@@ -133,16 +165,16 @@ export const DoctorAppointmentsView = ({ doctorId }: Props) => {
                 {showActions && (
                   <TableCell>
                     <div className="flex gap-1">
-                      {apt.status === 'Accepted' && (
-                        <>
-                          <Button size="sm" variant="outline" onClick={() => markAsCompleted(apt.id)}>
-                            <CheckCircle className="h-3 w-3 mr-1" />{t('appointments.actions.markCompleted')}
-                          </Button>
-                          <Button size="sm" variant="ghost" onClick={() => markAsNoShow(apt.id)}>
-                            <XCircle className="h-3 w-3 mr-1" />{t('appointments.actions.markNoShow')}
-                          </Button>
-                        </>
-                      )}
+                        {apt.status === 'Accepted' && (
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => handleMarkCompleted(apt)}>
+                              <CheckCircle className="h-3 w-3 mr-1" />{t('appointments.actions.markCompleted')}
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => handleMarkNoShow(apt)}>
+                              <XCircle className="h-3 w-3 mr-1" />{t('appointments.actions.markNoShow')}
+                            </Button>
+                          </>
+                        )}
                     </div>
                   </TableCell>
                 )}

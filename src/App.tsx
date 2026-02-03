@@ -11,6 +11,7 @@ import { UserManagementProvider } from "@/contexts/UserManagementContext";
 import { AppointmentProvider } from "@/contexts/AppointmentContext";
 import { AIChatProvider } from "@/contexts/AIChatContext";
 import { MedicalProfileProvider } from "@/contexts/MedicalProfileContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import FloatingAssistant from "@/components/ai-assistant/FloatingAssistant";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -33,36 +34,38 @@ const App = () => (
         <EnterpriseAuthProvider>
           <AuthProvider>
             <MedicalProfileProvider>
-              <AppointmentProvider>
-                <AIChatProvider>
-                  <TooltipProvider>
-                  <Toaster />
-                  <Sonner />
-                  <BrowserRouter>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/admin/users" element={<UserManagement />} />
-                      <Route path="/ai-assistant" element={<AIAssistant />} />
-                      <Route path="/ai" element={<AIAssistantPublic />} />
-                      <Route path="/features" element={<Features />} />
-                      <Route path="/for-doctors" element={<ForDoctors />} />
-                      <Route path="/for-patients" element={<ForPatients />} />
-                      <Route path="/pricing" element={<Pricing />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                    <FloatingAssistant />
-                  </BrowserRouter>
-                  </TooltipProvider>
-                </AIChatProvider>
-              </AppointmentProvider>
+              <NotificationProvider>
+                <AppointmentProvider>
+                  <AIChatProvider>
+                    <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    <BrowserRouter>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/admin/users" element={<UserManagement />} />
+                        <Route path="/ai-assistant" element={<AIAssistant />} />
+                        <Route path="/ai" element={<AIAssistantPublic />} />
+                        <Route path="/features" element={<Features />} />
+                        <Route path="/for-doctors" element={<ForDoctors />} />
+                        <Route path="/for-patients" element={<ForPatients />} />
+                        <Route path="/pricing" element={<Pricing />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                      <FloatingAssistant />
+                    </BrowserRouter>
+                    </TooltipProvider>
+                  </AIChatProvider>
+                </AppointmentProvider>
+              </NotificationProvider>
             </MedicalProfileProvider>
           </AuthProvider>
-        </EnterpriseAuthProvider>
-      </UserManagementProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+          </EnterpriseAuthProvider>
+        </UserManagementProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
 );
 
 export default App;

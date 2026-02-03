@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useAppointments } from '@/contexts/AppointmentContext';
 import { useMedicalProfile } from '@/contexts/MedicalProfileContext';
-import { doctors } from '@/data/mockData';
+import { useAppointmentNotifications } from '@/hooks/useAppointmentNotifications';
+import { doctors, patients } from '@/data/mockData';
 import { AppointmentType, TimeSlot, availableTimeSlots, appointmentTypeConfig } from '@/data/appointmentData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,6 +50,7 @@ const appointmentTypes: AppointmentType[] = [
 export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppointmentFormProps) => {
   const { requestAppointment, isLoading } = useAppointments();
   const { isProfileComplete } = useMedicalProfile();
+  const { sendNotification } = useAppointmentNotifications();
   
   const [step, setStep] = useState(0); // Start at 0 for profile check
   const [profileFormOpen, setProfileFormOpen] = useState(false);
@@ -133,7 +135,22 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
       isVirtual,
     });
     
-    if (success) {
+    if (success && selectedDoctorData) {
+      // Send notification to doctor
+      const patient = patients.find(p => p.id === patientId);
+      const patientName = patient ? `${patient.firstName} ${patient.lastName}` : 'Patient';
+      const firstSlot = selectedSlots[0];
+      
+      sendNotification('request', {
+        appointmentId: '', // Will be generated
+        patientId,
+        patientName,
+        doctorId: selectedDoctor,
+        doctorName: selectedDoctorData.name,
+        date: firstSlot.date,
+        time: firstSlot.time,
+      });
+      
       handleClose();
     }
   };

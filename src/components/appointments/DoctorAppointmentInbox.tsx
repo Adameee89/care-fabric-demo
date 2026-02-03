@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAppointments } from '@/contexts/AppointmentContext';
 import { useMedicalProfile } from '@/contexts/MedicalProfileContext';
+import { useAppointmentNotifications } from '@/hooks/useAppointmentNotifications';
 import { ExtendedAppointment, DeclineReason, declineReasonLabels, availableTimeSlots } from '@/data/appointmentData';
 import { AppointmentStatusBadge } from './AppointmentStatusBadge';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,7 @@ interface DoctorAppointmentInboxProps {
 export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps) => {
   const { getPendingForDoctor, acceptAppointment, declineAppointment, proposeReschedule, isLoading } = useAppointments();
   const { getProfileByUserId } = useMedicalProfile();
+  const { sendNotification } = useAppointmentNotifications();
   
   const [acceptDialogOpen, setAcceptDialogOpen] = useState(false);
   const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
@@ -49,14 +51,40 @@ export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps
   const handleAccept = async () => {
     if (!selectedAppointment) return;
     const slot = selectedAppointment.requestedSlots[selectedSlotIndex];
-    await acceptAppointment(selectedAppointment.id, slot);
+    const success = await acceptAppointment(selectedAppointment.id, slot);
+    
+    if (success) {
+      // Send notification to patient
+      sendNotification('accept', {
+        appointmentId: selectedAppointment.id,
+        patientId: selectedAppointment.patientId,
+        patientName: selectedAppointment.patientName,
+        doctorId: selectedAppointment.doctorId,
+        doctorName: selectedAppointment.doctorName,
+        date: slot.date,
+        time: slot.time,
+      });
+    }
+    
     setAcceptDialogOpen(false);
     setSelectedAppointment(null);
   };
   
   const handleDecline = async () => {
     if (!selectedAppointment) return;
-    await declineAppointment(selectedAppointment.id, declineReason, declineNotes || undefined);
+    const success = await declineAppointment(selectedAppointment.id, declineReason, declineNotes || undefined);
+    
+    if (success) {
+      // Send notification to patient
+      sendNotification('decline', {
+        appointmentId: selectedAppointment.id,
+        patientId: selectedAppointment.patientId,
+        patientName: selectedAppointment.patientName,
+        doctorId: selectedAppointment.doctorId,
+        doctorName: selectedAppointment.doctorName,
+      });
+    }
+    
     setDeclineDialogOpen(false);
     setSelectedAppointment(null);
     setDeclineNotes('');
@@ -64,7 +92,22 @@ export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps
   
   const handleReschedule = async () => {
     if (!selectedAppointment || !rescheduleDate || !rescheduleTime) return;
-    await proposeReschedule(selectedAppointment.id, { date: format(rescheduleDate, 'yyyy-MM-dd'), time: rescheduleTime });
+    const dateStr = format(rescheduleDate, 'yyyy-MM-dd');
+    const success = await proposeReschedule(selectedAppointment.id, { date: dateStr, time: rescheduleTime });
+    
+    if (success) {
+      // Send notification to patient
+      sendNotification('reschedule_propose', {
+        appointmentId: selectedAppointment.id,
+        patientId: selectedAppointment.patientId,
+        patientName: selectedAppointment.patientName,
+        doctorId: selectedAppointment.doctorId,
+        doctorName: selectedAppointment.doctorName,
+        date: dateStr,
+        time: rescheduleTime,
+      });
+    }
+    
     setRescheduleDialogOpen(false);
     setSelectedAppointment(null);
   };

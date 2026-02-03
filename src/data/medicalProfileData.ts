@@ -162,69 +162,101 @@ export const createOrUpdateProfile = (
 // SEED DATA FOR DEMO PATIENTS
 // ============================================
 
+// Import patients to seed profiles for them
+import { patients } from './mockData';
+import { systemUsers } from './usersData';
+
+const firstNames = {
+  male: ['James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph', 'Thomas', 'Charles'],
+  female: ['Mary', 'Patricia', 'Jennifer', 'Linda', 'Barbara', 'Elizabeth', 'Susan', 'Jessica', 'Sarah', 'Karen'],
+};
+
+const randomAllergies = ['Penicillin', 'Shellfish', 'Latex', 'Aspirin', 'Bee stings', 'Peanuts', 'Eggs', 'Milk'];
+const randomConditions = ['Hypertension', 'Diabetes Type 2', 'Asthma', 'Thyroid Disorder', 'Arthritis', 'COPD', 'Heart Disease', 'Chronic Kidney Disease'];
+const randomMedications = ['Metformin 500mg', 'Lisinopril 10mg', 'Albuterol inhaler', 'Levothyroxine 50mcg', 'Atorvastatin 20mg', 'Omeprazole 20mg', 'Amlodipine 5mg'];
+
 export const seedDemoProfiles = (): void => {
   const profiles = loadMedicalProfiles();
   
-  // Only seed if empty
-  if (Object.keys(profiles).length > 0) return;
+  // Only seed if we have very few profiles
+  if (Object.keys(profiles).length >= 10) return;
   
-  // Seed first few patients with complete profiles for demo
-  const demoProfiles: Record<string, PatientMedicalProfile> = {
-    'usr_pat_001': {
-      id: 'profile_usr_pat_001',
-      userId: 'usr_pat_001',
-      firstName: 'Michael',
-      lastName: 'Thompson',
-      dateOfBirth: '1985-03-15',
-      gender: 'male',
-      allergies: ['Penicillin', 'Shellfish'],
-      chronicConditions: ['Hypertension', 'Diabetes Type 2'],
-      emergencyContactName: 'Sarah Thompson',
-      emergencyContactPhone: '+1-555-0123',
-      bloodType: 'O+',
-      medications: ['Metformin 500mg', 'Lisinopril 10mg'],
-      notes: 'Regular checkups every 3 months',
+  // Find all unique patient IDs from systemUsers that are patients
+  const patientUsers = systemUsers.filter(u => u.role === 'PATIENT' && u.linkedEntityId);
+  
+  // Also get patient entities from mockData  
+  const patientEntities = patients.slice(0, 30); // Take first 30 patients
+  
+  const demoProfiles: Record<string, PatientMedicalProfile> = {};
+  
+  // Create profiles for system users (patients)
+  patientUsers.forEach((user, index) => {
+    const patientEntity = patients.find(p => p.id === user.linkedEntityId);
+    const isFemale = ['Mary', 'Patricia', 'Jennifer', 'Linda', 'Barbara', 'Elizabeth', 'Susan', 'Jessica', 'Sarah', 'Karen', 'Emily', 'Helen', 'Margaret', 'Lisa', 'Betty', 'Dorothy', 'Sandra', 'Ashley', 'Kimberly', 'Donna', 'Nancy', 'Laura', 'Michelle', 'Carol', 'Amanda'].includes(user.firstName);
+    const gender: Gender = isFemale ? 'female' : 'male';
+    
+    // Generate random data with some variety
+    const hasAllergies = Math.random() > 0.3;
+    const hasConditions = Math.random() > 0.4;
+    const allergies = hasAllergies 
+      ? randomAllergies.slice(0, Math.floor(Math.random() * 3) + 1)
+      : [];
+    const conditions = hasConditions 
+      ? randomConditions.slice(0, Math.floor(Math.random() * 2) + 1)
+      : [];
+    const medications = conditions.length > 0 
+      ? randomMedications.slice(0, Math.floor(Math.random() * 2) + 1)
+      : [];
+    
+    demoProfiles[user.id] = {
+      id: `profile_${user.id}`,
+      userId: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      dateOfBirth: patientEntity?.dateOfBirth || `19${70 + Math.floor(Math.random() * 30)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+      gender,
+      allergies,
+      chronicConditions: conditions,
+      emergencyContactName: patientEntity?.emergencyContact?.name || `Emergency Contact ${index + 1}`,
+      emergencyContactPhone: patientEntity?.emergencyContact?.phone || `+1-555-${String(1000 + index).padStart(4, '0')}`,
+      bloodType: bloodTypes[Math.floor(Math.random() * bloodTypes.length)],
+      medications,
+      notes: Math.random() > 0.7 ? 'Regular checkups recommended' : null,
       isComplete: true,
-      createdAt: '2024-01-15T10:00:00Z',
-      updatedAt: '2024-06-20T14:30:00Z',
-    },
-    'usr_pat_002': {
-      id: 'profile_usr_pat_002',
-      userId: 'usr_pat_002',
-      firstName: 'John',
-      lastName: 'Smith',
-      dateOfBirth: '1978-07-22',
-      gender: 'male',
-      allergies: ['Latex'],
-      chronicConditions: ['Asthma'],
-      emergencyContactName: 'Mary Smith',
-      emergencyContactPhone: '+1-555-0456',
-      bloodType: 'A+',
-      medications: ['Albuterol inhaler'],
+      createdAt: new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000).toISOString(),
+      updatedAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+  });
+  
+  // Also create profiles for patient entities that might be used in appointments
+  patientEntities.forEach((patient, index) => {
+    // Skip if we already have a profile for a user linked to this patient
+    const linkedUser = systemUsers.find(u => u.linkedEntityId === patient.id);
+    if (linkedUser && demoProfiles[linkedUser.id]) return;
+    
+    // Use patient.id as the profile key for direct lookups
+    const isFemale = patient.gender === 'female';
+    const gender: Gender = patient.gender === 'other' ? 'other' : patient.gender;
+    
+    demoProfiles[patient.id] = {
+      id: `profile_${patient.id}`,
+      userId: patient.id,
+      firstName: patient.firstName,
+      lastName: patient.lastName,
+      dateOfBirth: patient.dateOfBirth,
+      gender,
+      allergies: patient.allergies || [],
+      chronicConditions: patient.conditions || [],
+      emergencyContactName: patient.emergencyContact?.name || null,
+      emergencyContactPhone: patient.emergencyContact?.phone || null,
+      bloodType: patient.bloodType,
+      medications: [],
       notes: null,
       isComplete: true,
-      createdAt: '2024-02-10T09:00:00Z',
-      updatedAt: '2024-05-15T11:00:00Z',
-    },
-    'usr_pat_003': {
-      id: 'profile_usr_pat_003',
-      userId: 'usr_pat_003',
-      firstName: 'Patricia',
-      lastName: 'Johnson',
-      dateOfBirth: '1990-11-08',
-      gender: 'female',
-      allergies: [],
-      chronicConditions: ['Thyroid Disorder'],
-      emergencyContactName: 'Robert Johnson',
-      emergencyContactPhone: '+1-555-0789',
-      bloodType: 'B-',
-      medications: ['Levothyroxine 50mcg'],
-      notes: 'Prefers morning appointments',
-      isComplete: true,
-      createdAt: '2024-03-05T08:00:00Z',
-      updatedAt: '2024-04-10T16:00:00Z',
-    },
-  };
+      createdAt: patient.createdAt,
+      updatedAt: patient.lastVisit,
+    };
+  });
   
-  saveMedicalProfiles(demoProfiles);
+  saveMedicalProfiles({ ...profiles, ...demoProfiles });
 };
