@@ -9,6 +9,7 @@ import {
   appointmentTypeConfig,
 } from '@/data/appointmentData';
 import { doctors, patients } from '@/data/mockData';
+import { systemUsers } from '@/data/usersData';
 import { toast } from 'sonner';
 
 // LocalStorage key for appointments
@@ -98,6 +99,7 @@ interface AppointmentContextType {
 
 interface AppointmentRequestData {
   patientId: string;
+  patientName?: string; // Optional - will be resolved if not provided
   doctorId: string;
   appointmentType: AppointmentType;
   reason: string;
@@ -157,11 +159,39 @@ export const AppointmentProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setIsLoading(true);
     setError(null);
     
-    const patient = patients.find(p => p.id === data.patientId);
+    // Try to find patient - first by direct ID, then by linkedEntityId from systemUsers
+    let patient = patients.find(p => p.id === data.patientId);
+    let resolvedPatientName = data.patientName;
+    let resolvedPatientId = data.patientId;
+    
+    // If not found directly, check if patientId is a user ID with linkedEntityId
+    if (!patient) {
+      const systemUser = systemUsers.find(u => u.id === data.patientId);
+      if (systemUser) {
+        // Use the user's name
+        resolvedPatientName = `${systemUser.firstName} ${systemUser.lastName}`;
+        // Try to find linked patient entity
+        if (systemUser.linkedEntityId) {
+          patient = patients.find(p => p.id === systemUser.linkedEntityId);
+          resolvedPatientId = systemUser.linkedEntityId;
+        }
+      }
+    }
+    
+    // If we still don't have a name, use the patient entity name
+    if (!resolvedPatientName && patient) {
+      resolvedPatientName = `${patient.firstName} ${patient.lastName}`;
+    }
+    
+    // Final fallback
+    if (!resolvedPatientName) {
+      resolvedPatientName = 'Unknown Patient';
+    }
+    
     const doctor = doctors.find(d => d.id === data.doctorId);
     
-    if (!patient || !doctor) {
-      setError('Invalid patient or doctor');
+    if (!doctor) {
+      setError('Invalid doctor');
       setIsLoading(false);
       return false;
     }
@@ -170,8 +200,8 @@ export const AppointmentProvider: React.FC<{ children: React.ReactNode }> = ({ c
       const typeConfig = appointmentTypeConfig[data.appointmentType];
       const newAppointment: ExtendedAppointment = {
         id: `apt_${Date.now()}`,
-        patientId: data.patientId,
-        patientName: `${patient.firstName} ${patient.lastName}`,
+        patientId: resolvedPatientId,
+        patientName: resolvedPatientName,
         doctorId: data.doctorId,
         doctorName: doctor.name,
         doctorSpecialty: doctor.specialty,
