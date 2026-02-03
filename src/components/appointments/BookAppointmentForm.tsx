@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useAppointments } from '@/contexts/AppointmentContext';
 import { useMedicalProfile } from '@/contexts/MedicalProfileContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useAppointmentNotifications } from '@/hooks/useAppointmentNotifications';
 import { doctors, patients } from '@/data/mockData';
+import { systemUsers } from '@/data/usersData';
 import { AppointmentType, TimeSlot, availableTimeSlots, appointmentTypeConfig } from '@/data/appointmentData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,7 +52,27 @@ const appointmentTypes: AppointmentType[] = [
 export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppointmentFormProps) => {
   const { requestAppointment, isLoading } = useAppointments();
   const { isProfileComplete } = useMedicalProfile();
+  const { user } = useAuth();
   const { sendNotification } = useAppointmentNotifications();
+  
+  // Resolve the actual patient name - prefer logged-in user's name
+  const resolvedPatientName = useMemo(() => {
+    // If user is logged in, use their name
+    if (user && user.role === 'patient') {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    // Fallback: check systemUsers
+    const sysUser = systemUsers.find(u => u.id === patientId);
+    if (sysUser) {
+      return `${sysUser.firstName} ${sysUser.lastName}`;
+    }
+    // Fallback: check patients
+    const patient = patients.find(p => p.id === patientId);
+    if (patient) {
+      return `${patient.firstName} ${patient.lastName}`;
+    }
+    return 'Patient';
+  }, [user, patientId]);
   
   const [step, setStep] = useState(0); // Start at 0 for profile check
   const [profileFormOpen, setProfileFormOpen] = useState(false);
@@ -127,6 +149,7 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
     
     const success = await requestAppointment({
       patientId,
+      patientName: resolvedPatientName, // Pass the resolved name
       doctorId: selectedDoctor,
       appointmentType,
       reason,
@@ -136,15 +159,13 @@ export const BookAppointmentForm = ({ patientId, open, onOpenChange }: BookAppoi
     });
     
     if (success && selectedDoctorData) {
-      // Send notification to doctor
-      const patient = patients.find(p => p.id === patientId);
-      const patientName = patient ? `${patient.firstName} ${patient.lastName}` : 'Patient';
+      // Send notification to doctor using resolved name
       const firstSlot = selectedSlots[0];
       
       sendNotification('request', {
         appointmentId: '', // Will be generated
         patientId,
-        patientName,
+        patientName: resolvedPatientName,
         doctorId: selectedDoctor,
         doctorName: selectedDoctorData.name,
         date: firstSlot.date,

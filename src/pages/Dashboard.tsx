@@ -55,16 +55,36 @@ const Dashboard = () => {
 
   const isAdmin = hasRole('ADMIN') || user.role === 'admin';
 
-  const patient = patients.find(p => p.id === 'pat_042')!;
-  const doctor = doctors.find(d => d.id === 'doc_001')!;
-  const prescriptions = getPatientPrescriptions(patient.id);
-  const labResults = getPatientLabResults(patient.id);
+  // Get the actual patient/doctor linked to the logged-in user
+  const linkedPatient = user.linkedEntityId 
+    ? patients.find(p => p.id === user.linkedEntityId) 
+    : null;
+  const linkedDoctor = user.linkedEntityId 
+    ? doctors.find(d => d.id === user.linkedEntityId) 
+    : null;
+  
+  // Fallback to first match for demo (if user has no linked entity)
+  const patient = linkedPatient || patients.find(p => p.id === 'pat_042')!;
+  const doctor = linkedDoctor || doctors.find(d => d.id === 'doc_001')!;
+  
+  // Use the logged-in user's info for the patient ID when booking
+  const currentPatientId = user.role === 'patient' 
+    ? (user.linkedEntityId || patient?.id || 'pat_042') 
+    : patient?.id;
+  
+  const prescriptions = getPatientPrescriptions(currentPatientId);
+  const labResults = getPatientLabResults(currentPatientId);
   const activePrescriptions = prescriptions.filter(p => p.status === 'Active');
   
-  const upcomingAppointments = user.role === 'patient' ? getUpcomingForPatient(patient.id) : [];
-  const pendingRequests = user.role === 'doctor' ? getPendingForDoctor(doctor.id) : [];
-  const todaysSchedule = user.role === 'doctor' ? getTodaysSchedule(doctor.id) : [];
-  const doctorAppts = user.role === 'doctor' ? getDoctorAppointments(doctor.id) : [];
+  // Use correct IDs for appointments
+  const currentDoctorId = user.role === 'doctor' 
+    ? (user.linkedEntityId || doctor?.id || 'doc_001') 
+    : doctor?.id;
+  
+  const upcomingAppointments = user.role === 'patient' ? getUpcomingForPatient(currentPatientId) : [];
+  const pendingRequests = user.role === 'doctor' ? getPendingForDoctor(currentDoctorId) : [];
+  const todaysSchedule = user.role === 'doctor' ? getTodaysSchedule(currentDoctorId) : [];
+  const doctorAppts = user.role === 'doctor' ? getDoctorAppointments(currentDoctorId) : [];
   const stats = getStatusStats();
 
   // Doctor stats
@@ -195,8 +215,8 @@ const Dashboard = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">
-              {user.role === 'patient' ? t('auth.welcomeBack', { name: patient.firstName }) : 
-               user.role === 'doctor' ? t('auth.helloDoctor', { name: doctor.lastName }) : t('auth.adminDashboard')}
+              {user.role === 'patient' ? t('auth.welcomeBack', { name: user.firstName }) : 
+               user.role === 'doctor' ? t('auth.helloDoctor', { name: user.lastName }) : t('auth.adminDashboard')}
             </h1>
             <p className="text-muted-foreground">
               {user.role === 'patient' ? t('doctor.dashboard.healthOverview') : 
@@ -264,7 +284,7 @@ const Dashboard = () => {
               </div>
             </div>
             <p className="text-2xl font-bold">
-              {user.role === 'patient' ? patient.conditions.length : 
+              {user.role === 'patient' ? (linkedPatient?.conditions?.length || 0) : 
                user.role === 'doctor' ? `${noShowRate}%` : stats.Declined || 0}
             </p>
             <p className="text-sm text-muted-foreground">
@@ -278,7 +298,7 @@ const Dashboard = () => {
         {user.role === 'patient' && (
           <div className="glass-card rounded-2xl p-6">
             <h2 className="text-lg font-semibold mb-4">{t('appointments.myAppointments')}</h2>
-            <PatientAppointmentList patientId={patient.id} />
+            <PatientAppointmentList patientId={currentPatientId} />
           </div>
         )}
 
@@ -290,12 +310,12 @@ const Dashboard = () => {
             </TabsList>
             <TabsContent value="inbox">
               <div className="glass-card rounded-2xl p-6">
-                <DoctorAppointmentInbox doctorId={doctor.id} />
+                <DoctorAppointmentInbox doctorId={currentDoctorId} />
               </div>
             </TabsContent>
             <TabsContent value="schedule">
               <div className="glass-card rounded-2xl p-6">
-                <DoctorAppointmentsView doctorId={doctor.id} />
+                <DoctorAppointmentsView doctorId={currentDoctorId} />
               </div>
             </TabsContent>
           </Tabs>
@@ -311,7 +331,7 @@ const Dashboard = () => {
       </main>
 
       {user.role === 'patient' && (
-        <BookAppointmentForm patientId={patient.id} open={bookingOpen} onOpenChange={setBookingOpen} />
+        <BookAppointmentForm patientId={currentPatientId} open={bookingOpen} onOpenChange={setBookingOpen} />
       )}
     </div>
   );

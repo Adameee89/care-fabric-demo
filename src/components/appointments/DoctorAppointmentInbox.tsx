@@ -148,42 +148,41 @@ export const DoctorAppointmentInbox = ({ doctorId }: DoctorAppointmentInboxProps
         const patientUserId = findPatientUserId(apt.patientId);
         const hasProfile = patientUserId ? !!getProfileByUserId(patientUserId) : false;
         
+        // Parse patient name from appointment for avatar (handles both new and legacy appointments)
+        const nameParts = apt.patientName.split(' ');
+        const avatarFirstName = nameParts[0] || '';
+        const avatarLastName = nameParts.slice(1).join(' ') || '';
+        
         return (
           <div key={apt.id} className="glass-card rounded-xl p-4">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
-                {patient ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button 
-                        onClick={() => handleViewProfile(apt.patientId, apt.patientName)}
-                        className="relative group"
-                      >
-                        <UserAvatar 
-                          userId={patient.id}
-                          firstName={patient.firstName}
-                          lastName={patient.lastName}
-                          size="md"
-                        />
-                        <div className="absolute inset-0 rounded-full bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Info className="h-4 w-4 text-primary" />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button 
+                      onClick={() => handleViewProfile(apt.patientId, apt.patientName)}
+                      className="relative group"
+                    >
+                      <UserAvatar 
+                        userId={apt.patientId}
+                        firstName={avatarFirstName}
+                        lastName={avatarLastName}
+                        size="md"
+                      />
+                      <div className="absolute inset-0 rounded-full bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Info className="h-4 w-4 text-primary" />
+                      </div>
+                      {hasProfile && (
+                        <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-success flex items-center justify-center">
+                          <Heart className="h-2.5 w-2.5 text-success-foreground" />
                         </div>
-                        {hasProfile && (
-                          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-success flex items-center justify-center">
-                            <Heart className="h-2.5 w-2.5 text-success-foreground" />
-                          </div>
-                        )}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>View patient profile</p>
-                    </TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <User className="w-5 h-5 text-primary" />
-                  </div>
-                )}
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>View patient profile</p>
+                  </TooltipContent>
+                </Tooltip>
                 <div>
                   <button 
                     className="font-medium hover:text-primary hover:underline transition-colors text-left"
