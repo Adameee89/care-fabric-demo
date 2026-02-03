@@ -29,8 +29,9 @@ export const MedicalProfileProvider: React.FC<{ children: React.ReactNode }> = (
   const [profiles, setProfiles] = useState<Record<string, PatientMedicalProfile>>({});
   const [isLoading, setIsLoading] = useState(false);
   
-  // Load profiles on mount
+  // Load profiles on mount and seed demo data
   useEffect(() => {
+    // Always try to seed - the function checks if enough profiles exist
     seedDemoProfiles();
     setProfiles(loadMedicalProfiles());
   }, []);

@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEnterpriseAuthSafe } from '@/contexts/EnterpriseAuthContext';
 import { useAppointments } from '@/contexts/AppointmentContext';
-import { Calendar, FileText, Pill, Bell, Activity, Plus, Menu, LogOut, Settings, Globe, Sun, Moon } from 'lucide-react';
+import { useNotifications } from '@/contexts/NotificationContext';
+import { Calendar, FileText, Pill, Activity, Plus, Menu, LogOut, Settings, Globe, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -14,8 +15,9 @@ import { DoctorAppointmentInbox } from '@/components/appointments/DoctorAppointm
 import { DoctorAppointmentsView } from '@/components/doctor/DoctorAppointmentsView';
 import { AdminDashboardTabs } from '@/components/admin/AdminDashboardTabs';
 import { ImpersonationBanner } from '@/components/admin/ImpersonationBanner';
+import { NotificationPanel } from '@/components/notifications/NotificationPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getPatientPrescriptions, getPatientLabResults, notifications, patients, doctors } from '@/data/mockData';
+import { getPatientPrescriptions, getPatientLabResults, patients, doctors } from '@/data/mockData';
 import { Heart } from 'lucide-react';
 import { UserAvatar } from '@/components/UserAvatar';
 import {
@@ -40,6 +42,7 @@ const Dashboard = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { isImpersonating, currentUser: enterpriseUser, hasRole } = useEnterpriseAuthSafe();
   const { getUpcomingForPatient, getPendingForDoctor, getStatusStats, getTodaysSchedule, getDoctorAppointments } = useAppointments();
+  const { unreadCount } = useNotifications();
   const [bookingOpen, setBookingOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -57,7 +60,6 @@ const Dashboard = () => {
   const prescriptions = getPatientPrescriptions(patient.id);
   const labResults = getPatientLabResults(patient.id);
   const activePrescriptions = prescriptions.filter(p => p.status === 'Active');
-  const unreadNotifications = notifications.filter(n => !n.isRead);
   
   const upcomingAppointments = user.role === 'patient' ? getUpcomingForPatient(patient.id) : [];
   const pendingRequests = user.role === 'doctor' ? getPendingForDoctor(doctor.id) : [];
@@ -93,14 +95,7 @@ const Dashboard = () => {
           <div className="hidden md:flex items-center gap-3">
             <LanguageSwitcher />
             <ThemeToggle />
-            <button className="relative p-2 rounded-lg hover:bg-muted">
-              <Bell className="w-5 h-5" />
-              {unreadNotifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
-                  {unreadNotifications.length}
-                </span>
-              )}
-            </button>
+            <NotificationPanel />
             <div className="flex items-center gap-3">
               <UserAvatar 
                 userId={user.id} 
@@ -121,14 +116,7 @@ const Dashboard = () => {
           {/* Mobile Navigation */}
           <div className="flex md:hidden items-center gap-2">
             {/* Notifications */}
-            <button className="relative p-2 rounded-lg hover:bg-muted">
-              <Bell className="w-5 h-5" />
-              {unreadNotifications.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center">
-                  {unreadNotifications.length}
-                </span>
-              )}
-            </button>
+            <NotificationPanel />
             
             {/* User Menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>

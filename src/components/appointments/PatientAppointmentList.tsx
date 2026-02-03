@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAppointments } from '@/contexts/AppointmentContext';
+import { useAppointmentNotifications } from '@/hooks/useAppointmentNotifications';
 import { ExtendedAppointment, statusConfig, declineReasonLabels } from '@/data/appointmentData';
 import { AppointmentStatusBadge } from './AppointmentStatusBadge';
 import { Button } from '@/components/ui/button';
@@ -47,6 +48,7 @@ export const PatientAppointmentList = ({ patientId }: PatientAppointmentListProp
     declineReschedule,
     isLoading 
   } = useAppointments();
+  const { sendNotification } = useAppointmentNotifications();
   
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [rescheduleDialogOpen, setRescheduleDialogOpen] = useState(false);
@@ -81,7 +83,21 @@ export const PatientAppointmentList = ({ patientId }: PatientAppointmentListProp
   
   const handleConfirmCancel = async () => {
     if (!selectedAppointment) return;
-    await cancelAppointment(selectedAppointment.id, cancelReason || undefined);
+    const success = await cancelAppointment(selectedAppointment.id, cancelReason || undefined);
+    
+    if (success) {
+      // Send notification to doctor
+      sendNotification('cancel_by_patient', {
+        appointmentId: selectedAppointment.id,
+        patientId: selectedAppointment.patientId,
+        patientName: selectedAppointment.patientName,
+        doctorId: selectedAppointment.doctorId,
+        doctorName: selectedAppointment.doctorName,
+        date: selectedAppointment.confirmedSlot?.date,
+        time: selectedAppointment.confirmedSlot?.time,
+      });
+    }
+    
     setCancelDialogOpen(false);
     setSelectedAppointment(null);
     setCancelReason('');
@@ -89,14 +105,40 @@ export const PatientAppointmentList = ({ patientId }: PatientAppointmentListProp
   
   const handleAcceptReschedule = async () => {
     if (!selectedAppointment) return;
-    await acceptReschedule(selectedAppointment.id);
+    const success = await acceptReschedule(selectedAppointment.id);
+    
+    if (success && selectedAppointment.rescheduleProposal.date) {
+      // Send notification to doctor
+      sendNotification('reschedule_accept', {
+        appointmentId: selectedAppointment.id,
+        patientId: selectedAppointment.patientId,
+        patientName: selectedAppointment.patientName,
+        doctorId: selectedAppointment.doctorId,
+        doctorName: selectedAppointment.doctorName,
+        date: selectedAppointment.rescheduleProposal.date,
+        time: selectedAppointment.rescheduleProposal.time || undefined,
+      });
+    }
+    
     setRescheduleDialogOpen(false);
     setSelectedAppointment(null);
   };
   
   const handleDeclineReschedule = async () => {
     if (!selectedAppointment) return;
-    await declineReschedule(selectedAppointment.id);
+    const success = await declineReschedule(selectedAppointment.id);
+    
+    if (success) {
+      // Send notification to doctor
+      sendNotification('reschedule_decline', {
+        appointmentId: selectedAppointment.id,
+        patientId: selectedAppointment.patientId,
+        patientName: selectedAppointment.patientName,
+        doctorId: selectedAppointment.doctorId,
+        doctorName: selectedAppointment.doctorName,
+      });
+    }
+    
     setRescheduleDialogOpen(false);
     setSelectedAppointment(null);
   };
