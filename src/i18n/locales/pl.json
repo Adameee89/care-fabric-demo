@@ -1,0 +1,271 @@
+{
+  "common": {
+    "appName": "MediConnect",
+    "loading": "Ładowanie...",
+    "error": "Błąd",
+    "success": "Sukces",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "save": "Zapisz",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "view": "Wyświetl",
+    "search": "Szukaj",
+    "filter": "Filtruj",
+    "sort": "Sortuj",
+    "all": "Wszystko",
+    "none": "Brak",
+    "yes": "Tak",
+    "no": "Nie",
+    "back": "Wstecz",
+    "next": "Dalej",
+    "previous": "Poprzedni",
+    "submit": "Wyślij",
+    "reset": "Resetuj",
+    "close": "Zamknij",
+    "actions": "Akcje",
+    "details": "Szczegóły",
+    "status": "Status",
+    "date": "Data",
+    "time": "Czas",
+    "duration": "Czas trwania",
+    "type": "Typ",
+    "notes": "Notatki",
+    "reason": "Powód",
+    "patient": "Pacjent",
+    "doctor": "Lekarz",
+    "admin": "Administrator",
+    "logout": "Wyloguj się",
+    "login": "Zaloguj się",
+    "demoMode": "Tryb Demo",
+    "demoModeDesc": "To jest demonstracja z symulowanymi danymi."
+  },
+  "nav": {
+    "home": "Strona główna",
+    "dashboard": "Panel",
+    "appointments": "Wizyty",
+    "patients": "Pacjenci",
+    "doctors": "Lekarze",
+    "settings": "Ustawienia",
+    "profile": "Profil",
+    "notifications": "Powiadomienia"
+  },
+  "auth": {
+    "welcomeBack": "Witaj ponownie, {{name}}!",
+    "helloDoctor": "Dzień dobry, Dr {{name}}",
+    "adminDashboard": "Panel Administratora",
+    "selectRole": "Wybierz swoją rolę",
+    "loginAsPatient": "Zaloguj się jako Pacjent",
+    "loginAsDoctor": "Zaloguj się jako Lekarz",
+    "loginAsAdmin": "Zaloguj się jako Admin",
+    "mfaTitle": "Uwierzytelnianie dwuskładnikowe",
+    "mfaDescription": "Wprowadź 6-cyfrowy kod z aplikacji uwierzytelniającej",
+    "enterCode": "Wprowadź kod weryfikacyjny"
+  },
+  "appointments": {
+    "title": "Wizyty",
+    "myAppointments": "Moje Wizyty",
+    "appointmentInbox": "Skrzynka Wizyt",
+    "allAppointments": "Przegląd Wizyt",
+    "bookAppointment": "Umów Wizytę",
+    "todayAppointments": "Dzisiejsze Wizyty",
+    "upcomingAppointments": "Nadchodzące Wizyty",
+    "pastAppointments": "Przeszłe Wizyty",
+    "pendingRequests": "Oczekujące Prośby",
+    "noAppointments": "Nie znaleziono wizyt",
+    "noUpcoming": "Brak nadchodzących wizyt",
+    "noPending": "Brak oczekujących próśb",
+    "appointmentDetails": "Szczegóły Wizyty",
+    "patientInfo": "Informacje o Pacjencie",
+    "doctorInfo": "Informacje o Lekarzu",
+    "appointmentType": "Typ Wizyty",
+    "requestedSlots": "Żądane Terminy",
+    "confirmedSlot": "Potwierdzony Termin",
+    "virtualAppointment": "Wizyta Wirtualna",
+    "inPersonAppointment": "Wizyta Osobista",
+    "urgency": { "low": "Niski", "medium": "Średni", "high": "Wysoki" },
+    "status": {
+      "Requested": "Zgłoszona",
+      "PendingReview": "W Trakcie Przeglądu",
+      "Accepted": "Potwierdzona",
+      "Declined": "Odrzucona",
+      "RescheduleProposed": "Zaproponowano Zmianę Terminu",
+      "RescheduleAccepted": "Termin Zmieniony",
+      "RescheduleDeclined": "Zmiana Terminu Odrzucona",
+      "CancelledByPatient": "Anulowana",
+      "CancelledByDoctor": "Anulowana przez Lekarza",
+      "Completed": "Zakończona",
+      "NoShow": "Nieobecność"
+    },
+    "statusDesc": {
+      "Requested": "Oczekuje na przegląd przez lekarza",
+      "PendingReview": "Lekarz przegląda Twoje zgłoszenie",
+      "Accepted": "Wizyta potwierdzona",
+      "Declined": "Lekarz odrzucił tę wizytę",
+      "RescheduleProposed": "Zaproponowano nowy termin",
+      "RescheduleAccepted": "Wizyta została przełożona",
+      "RescheduleDeclined": "Propozycja zmiany terminu odrzucona",
+      "CancelledByPatient": "Anulowana przez pacjenta",
+      "CancelledByDoctor": "Lekarz anulował tę wizytę",
+      "Completed": "Wizyta zakończona",
+      "NoShow": "Pacjent nie stawił się"
+    },
+    "actions": {
+      "accept": "Akceptuj",
+      "decline": "Odrzuć",
+      "reschedule": "Przesuń Termin",
+      "cancel": "Anuluj Wizytę",
+      "markCompleted": "Oznacz jako Zakończoną",
+      "markNoShow": "Oznacz jako Nieobecność",
+      "viewReason": "Pokaż Powód",
+      "viewSummary": "Pokaż Podsumowanie",
+      "acceptReschedule": "Zaakceptuj Nowy Termin",
+      "declineReschedule": "Odrzuć Propozycję",
+      "proposeNewTime": "Zaproponuj Nowy Termin"
+    },
+    "decline": {
+      "title": "Odrzuć Wizytę",
+      "selectReason": "Wybierz powód",
+      "reasons": {
+        "NotAvailable": "Niedostępny w żądanym terminie",
+        "OutsideExpertise": "Poza zakresem specjalizacji",
+        "InsufficientInformation": "Niewystarczające informacje",
+        "Other": "Inny powód"
+      },
+      "additionalNotes": "Dodatkowe uwagi (opcjonalnie)"
+    },
+    "reschedule": {
+      "title": "Zaproponuj Zmianę Terminu",
+      "selectDate": "Wybierz nową datę",
+      "selectTime": "Wybierz nowy czas",
+      "proposedBy": "Zaproponowany przez",
+      "originalSlot": "Oryginalny termin",
+      "newSlot": "Nowy proponowany termin"
+    },
+    "types": {
+      "Initial Consultation": "Konsultacja Wstępna",
+      "Follow-up": "Wizyta Kontrolna",
+      "Routine Checkup": "Badanie Okresowe",
+      "Emergency": "Nagły Przypadek",
+      "Lab Review": "Przegląd Wyników",
+      "Prescription Refill": "Odnowienie Recepty",
+      "Telemedicine": "Telemedycyna"
+    },
+    "form": {
+      "step1": "Wybierz Lekarza",
+      "step2": "Wybierz Datę i Czas",
+      "step3": "Przejrzyj i Potwierdź",
+      "selectDoctor": "Wybierz lekarza",
+      "selectType": "Wybierz typ wizyty",
+      "selectDate": "Wybierz preferowane daty",
+      "selectTime": "Wybierz terminy",
+      "reasonPlaceholder": "Opisz powód wizyty...",
+      "notesPlaceholder": "Dodatkowe uwagi dla lekarza...",
+      "virtualOption": "To jest wizyta wirtualna"
+    }
+  },
+  "doctor": {
+    "dashboard": {
+      "title": "Panel Lekarza",
+      "overview": "Przegląd",
+      "schedule": "Harmonogram",
+      "patients": "Moi Pacjenci",
+      "appointmentsToday": "Wizyty Dzisiaj",
+      "upcomingThisWeek": "Ten Tydzień",
+      "pastMonth": "Ostatnie 30 Dni",
+      "noShowRate": "Wskaźnik Nieobecności",
+      "avgPerDay": "Średnio na Dzień",
+      "pendingCount": "{{count}} oczekujących próśb",
+      "healthOverview": "Oto przegląd Twojego harmonogramu."
+    },
+    "schedule": {
+      "dailySchedule": "Plan Dnia",
+      "weeklyView": "Widok Tygodniowy",
+      "noAppointmentsToday": "Brak wizyt zaplanowanych na dziś",
+      "conflictWarning": "Wykryto konflikt terminów",
+      "overbookWarning": "Przepełniony termin"
+    },
+    "patient": {
+      "viewProfile": "Zobacz Profil",
+      "medicalHistory": "Historia Medyczna",
+      "prescriptions": "Recepty",
+      "labResults": "Wyniki Badań"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Panel Administratora",
+      "overview": "Przegląd Systemu",
+      "analytics": "Analizy",
+      "users": "Użytkownicy",
+      "systemStatus": "Status Systemu"
+    },
+    "analytics": {
+      "title": "Panel Analiz",
+      "doctorAnalytics": "Analizy Lekarzy",
+      "patientAnalytics": "Analizy Pacjentów",
+      "appointmentAnalytics": "Analizy Wizyt",
+      "totalDoctors": "Łącznie Lekarzy",
+      "totalPatients": "Łącznie Pacjentów",
+      "totalAppointments": "Łącznie Wizyt",
+      "appointmentsThisMonth": "Ten Miesiąc",
+      "acceptedRate": "Wskaźnik Akceptacji",
+      "declinedRate": "Wskaźnik Odrzuceń",
+      "noShowRate": "Wskaźnik Nieobecności",
+      "avgPerDay": "Śr. Wizyt/Dzień",
+      "patientsPerDoctor": "Pacjentów na Lekarza",
+      "appointmentsPerDoctor": "Wizyt na Lekarza",
+      "appointmentsPerPatient": "Wizyt na Pacjenta",
+      "activePatients": "Aktywni Pacjenci",
+      "inactivePatients": "Nieaktywni Pacjenci",
+      "statusDistribution": "Rozkład Statusów",
+      "topDoctors": "Top Lekarze wg Obciążenia",
+      "weeklyTrends": "Trendy Tygodniowe",
+      "monthlyTrends": "Trendy Miesięczne"
+    },
+    "table": {
+      "doctorName": "Imię Lekarza",
+      "specialty": "Specjalizacja",
+      "patients": "Pacjenci",
+      "appointments": "Wizyty",
+      "thisMonth": "Ten Miesiąc",
+      "acceptRate": "Wskaźnik Akceptacji",
+      "rank": "Pozycja"
+    }
+  },
+  "stats": {
+    "upcoming": "Nadchodzące",
+    "activePrescriptions": "Aktywne Recepty",
+    "labResults": "Wyniki Badań",
+    "activeConditions": "Aktywne Schorzenia",
+    "completed": "Zakończone",
+    "accepted": "Zaakceptowane",
+    "declined": "Odrzucone"
+  },
+  "landing": {
+    "hero": {
+      "title": "Twoje Zdrowie, Nasz Priorytet",
+      "subtitle": "Doświadcz płynnego zarządzania zdrowiem z MediConnect",
+      "cta": "Rozpocznij"
+    },
+    "features": {
+      "title": "Funkcje",
+      "appointments": "Łatwe Wizyty",
+      "records": "Cyfrowe Dokumenty",
+      "telemedicine": "Telemedycyna"
+    }
+  },
+  "languages": { "en": "Angielski", "pl": "Polski" },
+  "time": {
+    "today": "Dzisiaj",
+    "tomorrow": "Jutro",
+    "yesterday": "Wczoraj",
+    "thisWeek": "Ten Tydzień",
+    "lastWeek": "Ostatni Tydzień",
+    "thisMonth": "Ten Miesiąc",
+    "lastMonth": "Ostatni Miesiąc",
+    "minutes": "minut",
+    "hours": "godzin",
+    "days": "dni"
+  }
+}

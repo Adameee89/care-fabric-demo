@@ -1,0 +1,271 @@
+{
+  "common": {
+    "appName": "MediConnect",
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "cancel": "Annuleren",
+    "confirm": "Bevestigen",
+    "save": "Opslaan",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "view": "Bekijken",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "sort": "Sorteren",
+    "all": "Alles",
+    "none": "Geen",
+    "yes": "Ja",
+    "no": "Nee",
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "submit": "Verzenden",
+    "reset": "Herstellen",
+    "close": "Sluiten",
+    "actions": "Acties",
+    "details": "Details",
+    "status": "Status",
+    "date": "Datum",
+    "time": "Tijd",
+    "duration": "Duur",
+    "type": "Type",
+    "notes": "Notities",
+    "reason": "Reden",
+    "patient": "Patiënt",
+    "doctor": "Arts",
+    "admin": "Beheerder",
+    "logout": "Uitloggen",
+    "login": "Inloggen",
+    "demoMode": "Demomodus",
+    "demoModeDesc": "Dit is een demonstratie met gesimuleerde gegevens."
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "appointments": "Afspraken",
+    "patients": "Patiënten",
+    "doctors": "Artsen",
+    "settings": "Instellingen",
+    "profile": "Profiel",
+    "notifications": "Meldingen"
+  },
+  "auth": {
+    "welcomeBack": "Welkom terug, {{name}}!",
+    "helloDoctor": "Hallo, Dr. {{name}}",
+    "adminDashboard": "Beheerderspaneel",
+    "selectRole": "Selecteer uw rol",
+    "loginAsPatient": "Inloggen als Patiënt",
+    "loginAsDoctor": "Inloggen als Arts",
+    "loginAsAdmin": "Inloggen als Beheerder",
+    "mfaTitle": "Tweefactorauthenticatie",
+    "mfaDescription": "Voer de 6-cijferige code in van uw authenticatie-app",
+    "enterCode": "Voer verificatiecode in"
+  },
+  "appointments": {
+    "title": "Afspraken",
+    "myAppointments": "Mijn Afspraken",
+    "appointmentInbox": "Afspraakverzoeken",
+    "allAppointments": "Overzicht Afspraken",
+    "bookAppointment": "Afspraak Maken",
+    "todayAppointments": "Afspraken Vandaag",
+    "upcomingAppointments": "Komende Afspraken",
+    "pastAppointments": "Eerdere Afspraken",
+    "pendingRequests": "Openstaande Verzoeken",
+    "noAppointments": "Geen afspraken gevonden",
+    "noUpcoming": "Geen komende afspraken",
+    "noPending": "Geen openstaande verzoeken",
+    "appointmentDetails": "Afspraakdetails",
+    "patientInfo": "Patiëntinformatie",
+    "doctorInfo": "Artsinformatie",
+    "appointmentType": "Type Afspraak",
+    "requestedSlots": "Aangevraagde Tijdsloten",
+    "confirmedSlot": "Bevestigd Tijdslot",
+    "virtualAppointment": "Virtuele Afspraak",
+    "inPersonAppointment": "Persoonlijke Afspraak",
+    "urgency": { "low": "Laag", "medium": "Gemiddeld", "high": "Hoog" },
+    "status": {
+      "Requested": "Aangevraagd",
+      "PendingReview": "In Behandeling",
+      "Accepted": "Bevestigd",
+      "Declined": "Afgewezen",
+      "RescheduleProposed": "Herplanningsvoorstel",
+      "RescheduleAccepted": "Herpland",
+      "RescheduleDeclined": "Herplanning Afgewezen",
+      "CancelledByPatient": "Geannuleerd",
+      "CancelledByDoctor": "Geannuleerd door Arts",
+      "Completed": "Afgerond",
+      "NoShow": "Niet Verschenen"
+    },
+    "statusDesc": {
+      "Requested": "Wacht op beoordeling door de arts",
+      "PendingReview": "De arts beoordeelt uw verzoek",
+      "Accepted": "Afspraak bevestigd",
+      "Declined": "De arts heeft deze afspraak afgewezen",
+      "RescheduleProposed": "Er is een nieuw tijdstip voorgesteld",
+      "RescheduleAccepted": "Afspraak succesvol herpland",
+      "RescheduleDeclined": "Het herplanningsvoorstel is afgewezen",
+      "CancelledByPatient": "Geannuleerd door patiënt",
+      "CancelledByDoctor": "Arts heeft deze afspraak geannuleerd",
+      "Completed": "Afspraak afgerond",
+      "NoShow": "Patiënt is niet verschenen"
+    },
+    "actions": {
+      "accept": "Accepteren",
+      "decline": "Afwijzen",
+      "reschedule": "Herplannen",
+      "cancel": "Afspraak Annuleren",
+      "markCompleted": "Markeren als Afgerond",
+      "markNoShow": "Markeren als Niet Verschenen",
+      "viewReason": "Reden Bekijken",
+      "viewSummary": "Samenvatting Bekijken",
+      "acceptReschedule": "Nieuw Tijdstip Accepteren",
+      "declineReschedule": "Voorstel Afwijzen",
+      "proposeNewTime": "Nieuw Tijdstip Voorstellen"
+    },
+    "decline": {
+      "title": "Afspraak Afwijzen",
+      "selectReason": "Selecteer een reden",
+      "reasons": {
+        "NotAvailable": "Niet beschikbaar op het aangevraagde tijdstip",
+        "OutsideExpertise": "Buiten het expertisegebied",
+        "InsufficientInformation": "Onvoldoende informatie",
+        "Other": "Andere reden"
+      },
+      "additionalNotes": "Aanvullende notities (optioneel)"
+    },
+    "reschedule": {
+      "title": "Herplanning Voorstellen",
+      "selectDate": "Selecteer nieuwe datum",
+      "selectTime": "Selecteer nieuw tijdstip",
+      "proposedBy": "Voorgesteld door",
+      "originalSlot": "Origineel tijdslot",
+      "newSlot": "Nieuw voorgesteld tijdslot"
+    },
+    "types": {
+      "Initial Consultation": "Eerste Consult",
+      "Follow-up": "Vervolgconsult",
+      "Routine Checkup": "Routinecontrole",
+      "Emergency": "Spoedeisend",
+      "Lab Review": "Labuitslagen Bespreking",
+      "Prescription Refill": "Receptverlenging",
+      "Telemedicine": "Telegeneeskunde"
+    },
+    "form": {
+      "step1": "Selecteer Arts",
+      "step2": "Kies Datum & Tijd",
+      "step3": "Controleer & Bevestig",
+      "selectDoctor": "Selecteer een arts",
+      "selectType": "Selecteer afspraaktype",
+      "selectDate": "Selecteer voorkeursdata",
+      "selectTime": "Selecteer tijdsloten",
+      "reasonPlaceholder": "Beschrijf de reden voor uw bezoek...",
+      "notesPlaceholder": "Aanvullende notities voor de arts...",
+      "virtualOption": "Dit is een virtuele afspraak"
+    }
+  },
+  "doctor": {
+    "dashboard": {
+      "title": "Artsenpaneel",
+      "overview": "Overzicht",
+      "schedule": "Planning",
+      "patients": "Mijn Patiënten",
+      "appointmentsToday": "Afspraken Vandaag",
+      "upcomingThisWeek": "Deze Week",
+      "pastMonth": "Afgelopen 30 Dagen",
+      "noShowRate": "Niet-verschijningspercentage",
+      "avgPerDay": "Gemiddeld per Dag",
+      "pendingCount": "{{count}} openstaande verzoeken",
+      "healthOverview": "Hier is uw planningsoverzicht."
+    },
+    "schedule": {
+      "dailySchedule": "Dagplanning",
+      "weeklyView": "Weekoverzicht",
+      "noAppointmentsToday": "Geen afspraken gepland voor vandaag",
+      "conflictWarning": "Planningsconflict gedetecteerd",
+      "overbookWarning": "Overboekt tijdslot"
+    },
+    "patient": {
+      "viewProfile": "Profiel Bekijken",
+      "medicalHistory": "Medische Geschiedenis",
+      "prescriptions": "Recepten",
+      "labResults": "Laboratoriumuitslagen"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Beheerderspaneel",
+      "overview": "Systeemoverzicht",
+      "analytics": "Analyses",
+      "users": "Gebruikers",
+      "systemStatus": "Systeemstatus"
+    },
+    "analytics": {
+      "title": "Analysepaneel",
+      "doctorAnalytics": "Artsenanalyses",
+      "patientAnalytics": "Patiëntenanalyses",
+      "appointmentAnalytics": "Afspraakanalyses",
+      "totalDoctors": "Totaal Artsen",
+      "totalPatients": "Totaal Patiënten",
+      "totalAppointments": "Totaal Afspraken",
+      "appointmentsThisMonth": "Deze Maand",
+      "acceptedRate": "Acceptatiepercentage",
+      "declinedRate": "Afwijzingspercentage",
+      "noShowRate": "Niet-verschijningspercentage",
+      "avgPerDay": "Gem. Afspraken/Dag",
+      "patientsPerDoctor": "Patiënten per Arts",
+      "appointmentsPerDoctor": "Afspraken per Arts",
+      "appointmentsPerPatient": "Afspraken per Patiënt",
+      "activePatients": "Actieve Patiënten",
+      "inactivePatients": "Inactieve Patiënten",
+      "statusDistribution": "Statusverdeling",
+      "topDoctors": "Top Artsen op Werklast",
+      "weeklyTrends": "Wekelijkse Trends",
+      "monthlyTrends": "Maandelijkse Trends"
+    },
+    "table": {
+      "doctorName": "Naam Arts",
+      "specialty": "Specialisme",
+      "patients": "Patiënten",
+      "appointments": "Afspraken",
+      "thisMonth": "Deze Maand",
+      "acceptRate": "Acceptatiepercentage",
+      "rank": "Rang"
+    }
+  },
+  "stats": {
+    "upcoming": "Komend",
+    "activePrescriptions": "Actieve Recepten",
+    "labResults": "Laboratoriumuitslagen",
+    "activeConditions": "Actieve Aandoeningen",
+    "completed": "Afgerond",
+    "accepted": "Geaccepteerd",
+    "declined": "Afgewezen"
+  },
+  "landing": {
+    "hero": {
+      "title": "Uw Gezondheid, Onze Prioriteit",
+      "subtitle": "Ervaar naadloos gezondheidsbeheer met MediConnect",
+      "cta": "Aan de slag"
+    },
+    "features": {
+      "title": "Functies",
+      "appointments": "Eenvoudige Afspraken",
+      "records": "Digitale Dossiers",
+      "telemedicine": "Telegeneeskunde"
+    }
+  },
+  "languages": { "en": "Engels", "nl": "Nederlands" },
+  "time": {
+    "today": "Vandaag",
+    "tomorrow": "Morgen",
+    "yesterday": "Gisteren",
+    "thisWeek": "Deze Week",
+    "lastWeek": "Vorige Week",
+    "thisMonth": "Deze Maand",
+    "lastMonth": "Vorige Maand",
+    "minutes": "minuten",
+    "hours": "uur",
+    "days": "dagen"
+  }
+}

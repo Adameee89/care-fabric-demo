@@ -1,0 +1,30 @@
+{
+  "common": { "appName": "MediConnect", "loading": "로딩 중...", "error": "오류", "success": "성공", "cancel": "취소", "confirm": "확인", "save": "저장", "delete": "삭제", "edit": "수정", "view": "보기", "search": "검색", "filter": "필터", "sort": "정렬", "all": "전체", "none": "없음", "yes": "예", "no": "아니오", "back": "뒤로", "next": "다음", "previous": "이전", "submit": "제출", "reset": "초기화", "close": "닫기", "actions": "작업", "details": "상세", "status": "상태", "date": "날짜", "time": "시간", "duration": "기간", "type": "유형", "notes": "메모", "reason": "사유", "patient": "환자", "doctor": "의사", "admin": "관리자", "logout": "로그아웃", "login": "로그인", "demoMode": "데모 모드", "demoModeDesc": "시뮬레이션 데이터를 사용한 데모입니다." },
+  "nav": { "home": "홈", "dashboard": "대시보드", "appointments": "예약", "patients": "환자", "doctors": "의사", "settings": "설정", "profile": "프로필", "notifications": "알림" },
+  "auth": { "welcomeBack": "다시 오신 것을 환영합니다, {{name}}님!", "helloDoctor": "안녕하세요, {{name}} 선생님", "adminDashboard": "관리자 대시보드", "selectRole": "역할을 선택하세요", "loginAsPatient": "환자로 로그인", "loginAsDoctor": "의사로 로그인", "loginAsAdmin": "관리자로 로그인", "mfaTitle": "2단계 인증", "mfaDescription": "인증 앱의 6자리 코드를 입력하세요", "enterCode": "인증 코드 입력" },
+  "appointments": {
+    "title": "예약", "myAppointments": "내 예약", "appointmentInbox": "예약 수신함", "allAppointments": "예약 개요", "bookAppointment": "예약하기", "todayAppointments": "오늘의 예약", "upcomingAppointments": "예정된 예약", "pastAppointments": "지난 예약", "pendingRequests": "대기 중인 요청", "noAppointments": "예약이 없습니다", "noUpcoming": "예정된 예약이 없습니다", "noPending": "대기 중인 요청이 없습니다", "appointmentDetails": "예약 상세", "patientInfo": "환자 정보", "doctorInfo": "의사 정보", "appointmentType": "예약 유형", "requestedSlots": "요청 시간대", "confirmedSlot": "확정 시간대", "virtualAppointment": "비대면 예약", "inPersonAppointment": "대면 예약",
+    "urgency": { "low": "낮음", "medium": "보통", "high": "높음" },
+    "status": { "Requested": "요청됨", "PendingReview": "검토 중", "Accepted": "확정됨", "Declined": "거절됨", "RescheduleProposed": "일정 변경 제안", "RescheduleAccepted": "일정 변경됨", "RescheduleDeclined": "일정 변경 거절", "CancelledByPatient": "취소됨", "CancelledByDoctor": "의사에 의해 취소", "Completed": "완료됨", "NoShow": "미방문" },
+    "statusDesc": { "Requested": "의사의 검토를 기다리고 있습니다", "PendingReview": "의사가 요청을 검토 중입니다", "Accepted": "예약이 확정되었습니다", "Declined": "의사가 이 예약을 거절했습니다", "RescheduleProposed": "새로운 시간이 제안되었습니다", "RescheduleAccepted": "예약이 성공적으로 변경되었습니다", "RescheduleDeclined": "일정 변경 제안이 거절되었습니다", "CancelledByPatient": "환자에 의해 취소됨", "CancelledByDoctor": "의사가 이 예약을 취소했습니다", "Completed": "예약이 완료되었습니다", "NoShow": "환자가 방문하지 않았습니다" },
+    "actions": { "accept": "수락", "decline": "거절", "reschedule": "일정 변경", "cancel": "예약 취소", "markCompleted": "완료로 표시", "markNoShow": "미방문으로 표시", "viewReason": "사유 보기", "viewSummary": "요약 보기", "acceptReschedule": "새 시간 수락", "declineReschedule": "제안 거절", "proposeNewTime": "새 시간 제안" },
+    "decline": { "title": "예약 거절", "selectReason": "사유를 선택하세요", "reasons": { "NotAvailable": "요청 시간에 불가", "OutsideExpertise": "전문 분야 외", "InsufficientInformation": "정보 부족", "Other": "기타 사유" }, "additionalNotes": "추가 메모 (선택사항)" },
+    "reschedule": { "title": "일정 변경 제안", "selectDate": "새 날짜 선택", "selectTime": "새 시간 선택", "proposedBy": "제안자", "originalSlot": "원래 시간대", "newSlot": "새 제안 시간대" },
+    "types": { "Initial Consultation": "초진", "Follow-up": "재진", "Routine Checkup": "정기 검진", "Emergency": "응급", "Lab Review": "검사 결과 확인", "Prescription Refill": "처방전 갱신", "Telemedicine": "원격 진료" },
+    "form": { "step1": "의사 선택", "step2": "날짜 및 시간 선택", "step3": "확인 후 제출", "selectDoctor": "의사를 선택하세요", "selectType": "예약 유형 선택", "selectDate": "선호 날짜 선택", "selectTime": "시간대 선택", "reasonPlaceholder": "방문 사유를 설명해주세요...", "notesPlaceholder": "의사에게 전달할 메모...", "virtualOption": "비대면 예약입니다" }
+  },
+  "doctor": {
+    "dashboard": { "title": "의사 대시보드", "overview": "개요", "schedule": "일정", "patients": "담당 환자", "appointmentsToday": "오늘의 예약", "upcomingThisWeek": "이번 주", "pastMonth": "최근 30일", "noShowRate": "미방문율", "avgPerDay": "일 평균", "pendingCount": "{{count}}건의 대기 중 요청", "healthOverview": "일정 개요입니다." },
+    "schedule": { "dailySchedule": "일일 일정", "weeklyView": "주간 보기", "noAppointmentsToday": "오늘 예약이 없습니다", "conflictWarning": "일정 충돌 감지", "overbookWarning": "초과 예약된 시간대" },
+    "patient": { "viewProfile": "프로필 보기", "medicalHistory": "병력", "prescriptions": "처방전", "labResults": "검사 결과" }
+  },
+  "admin": {
+    "dashboard": { "title": "관리자 대시보드", "overview": "시스템 개요", "analytics": "분석", "users": "사용자", "systemStatus": "시스템 상태" },
+    "analytics": { "title": "분석 대시보드", "doctorAnalytics": "의사 분석", "patientAnalytics": "환자 분석", "appointmentAnalytics": "예약 분석", "totalDoctors": "전체 의사", "totalPatients": "전체 환자", "totalAppointments": "전체 예약", "appointmentsThisMonth": "이번 달", "acceptedRate": "수락률", "declinedRate": "거절률", "noShowRate": "미방문율", "avgPerDay": "일 평균 예약", "patientsPerDoctor": "의사당 환자", "appointmentsPerDoctor": "의사당 예약", "appointmentsPerPatient": "환자당 예약", "activePatients": "활성 환자", "inactivePatients": "비활성 환자", "statusDistribution": "상태 분포", "topDoctors": "업무량별 상위 의사", "weeklyTrends": "주간 추이", "monthlyTrends": "월간 추이" },
+    "table": { "doctorName": "의사명", "specialty": "전문 분야", "patients": "환자", "appointments": "예약", "thisMonth": "이번 달", "acceptRate": "수락률", "rank": "순위" }
+  },
+  "stats": { "upcoming": "예정", "activePrescriptions": "유효 처방전", "labResults": "검사 결과", "activeConditions": "현재 질환", "completed": "완료", "accepted": "수락됨", "declined": "거절됨" },
+  "landing": { "hero": { "title": "당신의 건강이 우리의 최우선", "subtitle": "MediConnect로 원활한 건강관리를 경험하세요", "cta": "시작하기" }, "features": { "title": "기능", "appointments": "간편한 예약", "records": "디지털 기록", "telemedicine": "원격 진료" } },
+  "languages": { "en": "영어", "ko": "한국어" },
+  "time": { "today": "오늘", "tomorrow": "내일", "yesterday": "어제", "thisWeek": "이번 주", "lastWeek": "지난 주", "thisMonth": "이번 달", "lastMonth": "지난 달", "minutes": "분", "hours": "시간", "days": "일" }
+}

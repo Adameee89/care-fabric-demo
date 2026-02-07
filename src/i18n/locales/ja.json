@@ -1,0 +1,30 @@
+{
+  "common": { "appName": "MediConnect", "loading": "読み込み中...", "error": "エラー", "success": "成功", "cancel": "キャンセル", "confirm": "確認", "save": "保存", "delete": "削除", "edit": "編集", "view": "表示", "search": "検索", "filter": "フィルター", "sort": "並べ替え", "all": "すべて", "none": "なし", "yes": "はい", "no": "いいえ", "back": "戻る", "next": "次へ", "previous": "前へ", "submit": "送信", "reset": "リセット", "close": "閉じる", "actions": "操作", "details": "詳細", "status": "状態", "date": "日付", "time": "時間", "duration": "所要時間", "type": "種類", "notes": "メモ", "reason": "理由", "patient": "患者", "doctor": "医師", "admin": "管理者", "logout": "ログアウト", "login": "ログイン", "demoMode": "デモモード", "demoModeDesc": "これはシミュレーションデータを使用したデモです。" },
+  "nav": { "home": "ホーム", "dashboard": "ダッシュボード", "appointments": "予約", "patients": "患者", "doctors": "医師", "settings": "設定", "profile": "プロフィール", "notifications": "通知" },
+  "auth": { "welcomeBack": "おかえりなさい、{{name}}さん！", "helloDoctor": "こんにちは、{{name}}先生", "adminDashboard": "管理者ダッシュボード", "selectRole": "役割を選択", "loginAsPatient": "患者としてログイン", "loginAsDoctor": "医師としてログイン", "loginAsAdmin": "管理者としてログイン", "mfaTitle": "二要素認証", "mfaDescription": "認証アプリの6桁のコードを入力してください", "enterCode": "認証コードを入力" },
+  "appointments": {
+    "title": "予約", "myAppointments": "予約一覧", "appointmentInbox": "予約受信箱", "allAppointments": "予約概要", "bookAppointment": "予約する", "todayAppointments": "本日の予約", "upcomingAppointments": "今後の予約", "pastAppointments": "過去の予約", "pendingRequests": "保留中のリクエスト", "noAppointments": "予約が見つかりません", "noUpcoming": "今後の予約はありません", "noPending": "保留中のリクエストはありません", "appointmentDetails": "予約詳細", "patientInfo": "患者情報", "doctorInfo": "医師情報", "appointmentType": "予約タイプ", "requestedSlots": "希望時間帯", "confirmedSlot": "確定時間帯", "virtualAppointment": "オンライン予約", "inPersonAppointment": "対面予約",
+    "urgency": { "low": "低", "medium": "中", "high": "高" },
+    "status": { "Requested": "申請済み", "PendingReview": "審査中", "Accepted": "承認済み", "Declined": "却下", "RescheduleProposed": "変更提案済み", "RescheduleAccepted": "変更済み", "RescheduleDeclined": "変更却下", "CancelledByPatient": "キャンセル", "CancelledByDoctor": "医師によるキャンセル", "Completed": "完了", "NoShow": "無断欠席" },
+    "statusDesc": { "Requested": "医師の審査を待っています", "PendingReview": "医師がリクエストを審査中です", "Accepted": "予約が確認されました", "Declined": "医師がこの予約を却下しました", "RescheduleProposed": "新しい時間が提案されました", "RescheduleAccepted": "予約の変更に成功しました", "RescheduleDeclined": "変更提案が却下されました", "CancelledByPatient": "患者によりキャンセル", "CancelledByDoctor": "医師がこの予約をキャンセルしました", "Completed": "予約完了", "NoShow": "患者が来院しませんでした" },
+    "actions": { "accept": "承認", "decline": "却下", "reschedule": "変更", "cancel": "予約キャンセル", "markCompleted": "完了としてマーク", "markNoShow": "欠席としてマーク", "viewReason": "理由を表示", "viewSummary": "サマリーを表示", "acceptReschedule": "新時間を承認", "declineReschedule": "提案を却下", "proposeNewTime": "新時間を提案" },
+    "decline": { "title": "予約を却下", "selectReason": "理由を選択", "reasons": { "NotAvailable": "希望時間帯に対応不可", "OutsideExpertise": "専門分野外", "InsufficientInformation": "情報不足", "Other": "その他の理由" }, "additionalNotes": "追加メモ（任意）" },
+    "reschedule": { "title": "変更を提案", "selectDate": "新しい日付を選択", "selectTime": "新しい時間を選択", "proposedBy": "提案者", "originalSlot": "元の時間帯", "newSlot": "新しい提案時間帯" },
+    "types": { "Initial Consultation": "初診", "Follow-up": "再診", "Routine Checkup": "定期検診", "Emergency": "緊急", "Lab Review": "検査結果確認", "Prescription Refill": "処方箋更新", "Telemedicine": "遠隔医療" },
+    "form": { "step1": "医師を選択", "step2": "日時を選択", "step3": "確認して送信", "selectDoctor": "医師を選択してください", "selectType": "予約タイプを選択", "selectDate": "希望日を選択", "selectTime": "時間帯を選択", "reasonPlaceholder": "受診理由を記入してください...", "notesPlaceholder": "医師への追加メモ...", "virtualOption": "これはオンライン予約です" }
+  },
+  "doctor": {
+    "dashboard": { "title": "医師ダッシュボード", "overview": "概要", "schedule": "スケジュール", "patients": "担当患者", "appointmentsToday": "本日の予約", "upcomingThisWeek": "今週", "pastMonth": "過去30日", "noShowRate": "無断欠席率", "avgPerDay": "1日平均", "pendingCount": "{{count}}件の保留中リクエスト", "healthOverview": "スケジュール概要です。" },
+    "schedule": { "dailySchedule": "日次スケジュール", "weeklyView": "週間ビュー", "noAppointmentsToday": "本日の予約はありません", "conflictWarning": "スケジュールの競合を検出", "overbookWarning": "オーバーブッキングの時間帯" },
+    "patient": { "viewProfile": "プロフィール表示", "medicalHistory": "病歴", "prescriptions": "処方箋", "labResults": "検査結果" }
+  },
+  "admin": {
+    "dashboard": { "title": "管理者ダッシュボード", "overview": "システム概要", "analytics": "分析", "users": "ユーザー", "systemStatus": "システム状態" },
+    "analytics": { "title": "分析ダッシュボード", "doctorAnalytics": "医師分析", "patientAnalytics": "患者分析", "appointmentAnalytics": "予約分析", "totalDoctors": "医師総数", "totalPatients": "患者総数", "totalAppointments": "予約総数", "appointmentsThisMonth": "今月", "acceptedRate": "承認率", "declinedRate": "却下率", "noShowRate": "無断欠席率", "avgPerDay": "日平均予約数", "patientsPerDoctor": "医師あたり患者数", "appointmentsPerDoctor": "医師あたり予約数", "appointmentsPerPatient": "患者あたり予約数", "activePatients": "アクティブ患者", "inactivePatients": "非アクティブ患者", "statusDistribution": "状態分布", "topDoctors": "負荷別トップ医師", "weeklyTrends": "週次トレンド", "monthlyTrends": "月次トレンド" },
+    "table": { "doctorName": "医師名", "specialty": "専門", "patients": "患者", "appointments": "予約", "thisMonth": "今月", "acceptRate": "承認率", "rank": "順位" }
+  },
+  "stats": { "upcoming": "今後", "activePrescriptions": "有効な処方箋", "labResults": "検査結果", "activeConditions": "現在の症状", "completed": "完了", "accepted": "承認済み", "declined": "却下済み" },
+  "landing": { "hero": { "title": "あなたの健康を最優先に", "subtitle": "MediConnectでシームレスなヘルスケア管理を体験", "cta": "始める" }, "features": { "title": "機能", "appointments": "簡単予約", "records": "デジタル記録", "telemedicine": "遠隔医療" } },
+  "languages": { "en": "英語", "ja": "日本語" },
+  "time": { "today": "今日", "tomorrow": "明日", "yesterday": "昨日", "thisWeek": "今週", "lastWeek": "先週", "thisMonth": "今月", "lastMonth": "先月", "minutes": "分", "hours": "時間", "days": "日" }
+}
