@@ -7,6 +7,27 @@ import de from './locales/de.json';
 import fr from './locales/fr.json';
 import es from './locales/es.json';
 import ar from './locales/ar.json';
+import it from './locales/it.json';
+import pt from './locales/pt.json';
+import nl from './locales/nl.json';
+import pl from './locales/pl.json';
+import cs from './locales/cs.json';
+import sk from './locales/sk.json';
+import hu from './locales/hu.json';
+import sr from './locales/sr.json';
+import hr from './locales/hr.json';
+import sl from './locales/sl.json';
+import ro from './locales/ro.json';
+import bg from './locales/bg.json';
+import el from './locales/el.json';
+import tr from './locales/tr.json';
+import he from './locales/he.json';
+import zh from './locales/zh.json';
+import ja from './locales/ja.json';
+import ko from './locales/ko.json';
+import hi from './locales/hi.json';
+import ru from './locales/ru.json';
+import uk from './locales/uk.json';
 
 // Supported languages with metadata
 export interface LanguageConfig {
@@ -52,34 +73,36 @@ export const supportedLanguages: LanguageConfig[] = [
   { code: 'sv', name: 'Swedish', nativeName: 'Svenska', dir: 'ltr', flag: '🇸🇪' },
   { code: 'no', name: 'Norwegian', nativeName: 'Norsk', dir: 'ltr', flag: '🇳🇴' },
   { code: 'da', name: 'Danish', nativeName: 'Dansk', dir: 'ltr', flag: '🇩🇰' },
-  { code: 'et', name: 'Estonian', nativeName: 'Eesti', dir: 'ltr', flag: '🇪🇪' },
-  { code: 'lv', name: 'Latvian', nativeName: 'Latviešu', dir: 'ltr', flag: '🇱🇻' },
-  { code: 'lt', name: 'Lithuanian', nativeName: 'Lietuvių', dir: 'ltr', flag: '🇱🇹' },
-  { code: 'mt', name: 'Maltese', nativeName: 'Malti', dir: 'ltr', flag: '🇲🇹' },
-  { code: 'ga', name: 'Irish', nativeName: 'Gaeilge', dir: 'ltr', flag: '🇮🇪' },
-  { code: 'cy', name: 'Welsh', nativeName: 'Cymraeg', dir: 'ltr', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' },
-  { code: 'eu', name: 'Basque', nativeName: 'Euskara', dir: 'ltr', flag: '🇪🇸' },
-  { code: 'ca', name: 'Catalan', nativeName: 'Català', dir: 'ltr', flag: '🇪🇸' },
-  { code: 'gl', name: 'Galician', nativeName: 'Galego', dir: 'ltr', flag: '🇪🇸' },
-  { code: 'is', name: 'Icelandic', nativeName: 'Íslenska', dir: 'ltr', flag: '🇮🇸' },
-  { code: 'sq', name: 'Albanian', nativeName: 'Shqip', dir: 'ltr', flag: '🇦🇱' },
-  { code: 'mk', name: 'Macedonian', nativeName: 'Македонски', dir: 'ltr', flag: '🇲🇰' },
-  { code: 'bs', name: 'Bosnian', nativeName: 'Bosanski', dir: 'ltr', flag: '🇧🇦' },
-  { code: 'me', name: 'Montenegrin', nativeName: 'Crnogorski', dir: 'ltr', flag: '🇲🇪' },
-  { code: 'be', name: 'Belarusian', nativeName: 'Беларуская', dir: 'ltr', flag: '🇧🇾' },
-  { code: 'ka', name: 'Georgian', nativeName: 'ქართული', dir: 'ltr', flag: '🇬🇪' },
-  { code: 'hy', name: 'Armenian', nativeName: 'Հայերdelays', dir: 'ltr', flag: '🇦🇲' },
-  { code: 'az', name: 'Azerbaijani', nativeName: 'Azərbaycan', dir: 'ltr', flag: '🇦🇿' },
 ];
 
-// Resources - using English as fallback for non-translated languages
-const resources = {
+// Resources
+const resources: Record<string, { translation: Record<string, unknown> }> = {
   en: { translation: en },
   de: { translation: de },
   fr: { translation: fr },
   es: { translation: es },
   ar: { translation: ar },
-  // Other languages fall back to English
+  it: { translation: it },
+  pt: { translation: pt },
+  nl: { translation: nl },
+  pl: { translation: pl },
+  cs: { translation: cs },
+  sk: { translation: sk },
+  hu: { translation: hu },
+  sr: { translation: sr },
+  hr: { translation: hr },
+  sl: { translation: sl },
+  ro: { translation: ro },
+  bg: { translation: bg },
+  el: { translation: el },
+  tr: { translation: tr },
+  he: { translation: he },
+  zh: { translation: zh },
+  ja: { translation: ja },
+  ko: { translation: ko },
+  hi: { translation: hi },
+  ru: { translation: ru },
+  uk: { translation: uk },
 };
 
 // Get stored language or browser language
@@ -89,7 +112,6 @@ const getInitialLanguage = (): string => {
     return stored;
   }
   
-  // Try to match browser language
   const browserLang = navigator.language.split('-')[0];
   if (supportedLanguages.some(l => l.code === browserLang)) {
     return browserLang;
@@ -112,23 +134,19 @@ i18n
     },
   });
 
-// Helper to get language config
 export const getLanguageConfig = (code: string): LanguageConfig | undefined => {
   return supportedLanguages.find(l => l.code === code);
 };
 
-// Helper to get current language direction
 export const getCurrentDirection = (): 'ltr' | 'rtl' => {
   const currentLang = getLanguageConfig(i18n.language);
   return currentLang?.dir || 'ltr';
 };
 
-// Change language and persist
 export const changeLanguage = async (code: string): Promise<void> => {
   await i18n.changeLanguage(code);
   localStorage.setItem('mediconnect_language', code);
   
-  // Update document direction for RTL support
   const config = getLanguageConfig(code);
   document.documentElement.dir = config?.dir || 'ltr';
   document.documentElement.lang = code;

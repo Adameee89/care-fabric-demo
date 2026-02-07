@@ -1,0 +1,278 @@
+{
+  "common": {
+    "appName": "MediConnect",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "view": "Visualizar",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "all": "Todos",
+    "none": "Nenhum",
+    "yes": "Sim",
+    "no": "Não",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "reset": "Redefinir",
+    "close": "Fechar",
+    "actions": "Ações",
+    "details": "Detalhes",
+    "status": "Estado",
+    "date": "Data",
+    "time": "Hora",
+    "duration": "Duração",
+    "type": "Tipo",
+    "notes": "Notas",
+    "reason": "Motivo",
+    "patient": "Paciente",
+    "doctor": "Médico",
+    "admin": "Administrador",
+    "logout": "Sair",
+    "login": "Entrar",
+    "demoMode": "Modo Demo",
+    "demoModeDesc": "Esta é uma demonstração com dados simulados."
+  },
+  "nav": {
+    "home": "Início",
+    "dashboard": "Painel",
+    "appointments": "Consultas",
+    "patients": "Pacientes",
+    "doctors": "Médicos",
+    "settings": "Configurações",
+    "profile": "Perfil",
+    "notifications": "Notificações"
+  },
+  "auth": {
+    "welcomeBack": "Bem-vindo de volta, {{name}}!",
+    "helloDoctor": "Olá, Dr. {{name}}",
+    "adminDashboard": "Painel do Administrador",
+    "selectRole": "Selecione seu papel",
+    "loginAsPatient": "Entrar como Paciente",
+    "loginAsDoctor": "Entrar como Médico",
+    "loginAsAdmin": "Entrar como Admin",
+    "mfaTitle": "Autenticação de dois fatores",
+    "mfaDescription": "Digite o código de 6 dígitos do seu aplicativo autenticador",
+    "enterCode": "Digite o código de verificação"
+  },
+  "appointments": {
+    "title": "Consultas",
+    "myAppointments": "Minhas Consultas",
+    "appointmentInbox": "Caixa de Consultas",
+    "allAppointments": "Visão Geral das Consultas",
+    "bookAppointment": "Agendar Consulta",
+    "todayAppointments": "Consultas de Hoje",
+    "upcomingAppointments": "Próximas Consultas",
+    "pastAppointments": "Consultas Anteriores",
+    "pendingRequests": "Solicitações Pendentes",
+    "noAppointments": "Nenhuma consulta encontrada",
+    "noUpcoming": "Sem consultas próximas",
+    "noPending": "Sem solicitações pendentes",
+    "appointmentDetails": "Detalhes da Consulta",
+    "patientInfo": "Informações do Paciente",
+    "doctorInfo": "Informações do Médico",
+    "appointmentType": "Tipo de Consulta",
+    "requestedSlots": "Horários Solicitados",
+    "confirmedSlot": "Horário Confirmado",
+    "virtualAppointment": "Consulta Virtual",
+    "inPersonAppointment": "Consulta Presencial",
+    "urgency": {
+      "low": "Baixa",
+      "medium": "Média",
+      "high": "Alta"
+    },
+    "status": {
+      "Requested": "Solicitada",
+      "PendingReview": "Em Análise",
+      "Accepted": "Confirmada",
+      "Declined": "Recusada",
+      "RescheduleProposed": "Reagendamento Proposto",
+      "RescheduleAccepted": "Reagendada",
+      "RescheduleDeclined": "Reagendamento Recusado",
+      "CancelledByPatient": "Cancelada",
+      "CancelledByDoctor": "Cancelada pelo Médico",
+      "Completed": "Concluída",
+      "NoShow": "Não Compareceu"
+    },
+    "statusDesc": {
+      "Requested": "Aguardando revisão do médico",
+      "PendingReview": "O médico está analisando sua solicitação",
+      "Accepted": "Consulta confirmada",
+      "Declined": "O médico recusou esta consulta",
+      "RescheduleProposed": "Um novo horário foi proposto",
+      "RescheduleAccepted": "Consulta reagendada com sucesso",
+      "RescheduleDeclined": "A proposta de reagendamento foi recusada",
+      "CancelledByPatient": "Cancelada pelo paciente",
+      "CancelledByDoctor": "O médico cancelou esta consulta",
+      "Completed": "Consulta concluída",
+      "NoShow": "O paciente não compareceu"
+    },
+    "actions": {
+      "accept": "Aceitar",
+      "decline": "Recusar",
+      "reschedule": "Reagendar",
+      "cancel": "Cancelar Consulta",
+      "markCompleted": "Marcar como Concluída",
+      "markNoShow": "Marcar como Ausente",
+      "viewReason": "Ver Motivo",
+      "viewSummary": "Ver Resumo",
+      "acceptReschedule": "Aceitar Novo Horário",
+      "declineReschedule": "Recusar Proposta",
+      "proposeNewTime": "Propor Novo Horário"
+    },
+    "decline": {
+      "title": "Recusar Consulta",
+      "selectReason": "Selecione um motivo",
+      "reasons": {
+        "NotAvailable": "Indisponível no horário solicitado",
+        "OutsideExpertise": "Fora da área de especialidade",
+        "InsufficientInformation": "Informações insuficientes",
+        "Other": "Outro motivo"
+      },
+      "additionalNotes": "Notas adicionais (opcional)"
+    },
+    "reschedule": {
+      "title": "Propor Reagendamento",
+      "selectDate": "Selecionar nova data",
+      "selectTime": "Selecionar novo horário",
+      "proposedBy": "Proposto por",
+      "originalSlot": "Horário original",
+      "newSlot": "Novo horário proposto"
+    },
+    "types": {
+      "Initial Consultation": "Consulta Inicial",
+      "Follow-up": "Retorno",
+      "Routine Checkup": "Exame de Rotina",
+      "Emergency": "Emergência",
+      "Lab Review": "Revisão de Exames",
+      "Prescription Refill": "Renovação de Receita",
+      "Telemedicine": "Telemedicina"
+    },
+    "form": {
+      "step1": "Selecionar Médico",
+      "step2": "Escolher Data e Hora",
+      "step3": "Revisar e Confirmar",
+      "selectDoctor": "Selecione um médico",
+      "selectType": "Selecione o tipo de consulta",
+      "selectDate": "Selecione datas preferidas",
+      "selectTime": "Selecione horários",
+      "reasonPlaceholder": "Descreva o motivo da consulta...",
+      "notesPlaceholder": "Notas adicionais para o médico...",
+      "virtualOption": "Esta é uma consulta virtual"
+    }
+  },
+  "doctor": {
+    "dashboard": {
+      "title": "Painel do Médico",
+      "overview": "Visão Geral",
+      "schedule": "Agenda",
+      "patients": "Meus Pacientes",
+      "appointmentsToday": "Consultas Hoje",
+      "upcomingThisWeek": "Esta Semana",
+      "pastMonth": "Últimos 30 Dias",
+      "noShowRate": "Taxa de Ausência",
+      "avgPerDay": "Média por Dia",
+      "pendingCount": "{{count}} solicitações pendentes",
+      "healthOverview": "Aqui está a visão geral da sua agenda."
+    },
+    "schedule": {
+      "dailySchedule": "Agenda Diária",
+      "weeklyView": "Visão Semanal",
+      "noAppointmentsToday": "Sem consultas agendadas para hoje",
+      "conflictWarning": "Conflito de agenda detectado",
+      "overbookWarning": "Horário lotado"
+    },
+    "patient": {
+      "viewProfile": "Ver Perfil",
+      "medicalHistory": "Histórico Médico",
+      "prescriptions": "Receitas",
+      "labResults": "Resultados de Exames"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Painel do Administrador",
+      "overview": "Visão Geral do Sistema",
+      "analytics": "Análises",
+      "users": "Usuários",
+      "systemStatus": "Status do Sistema"
+    },
+    "analytics": {
+      "title": "Painel de Análises",
+      "doctorAnalytics": "Análises de Médicos",
+      "patientAnalytics": "Análises de Pacientes",
+      "appointmentAnalytics": "Análises de Consultas",
+      "totalDoctors": "Total de Médicos",
+      "totalPatients": "Total de Pacientes",
+      "totalAppointments": "Total de Consultas",
+      "appointmentsThisMonth": "Este Mês",
+      "acceptedRate": "Taxa de Aceitação",
+      "declinedRate": "Taxa de Recusa",
+      "noShowRate": "Taxa de Ausência",
+      "avgPerDay": "Média Consultas/Dia",
+      "patientsPerDoctor": "Pacientes por Médico",
+      "appointmentsPerDoctor": "Consultas por Médico",
+      "appointmentsPerPatient": "Consultas por Paciente",
+      "activePatients": "Pacientes Ativos",
+      "inactivePatients": "Pacientes Inativos",
+      "statusDistribution": "Distribuição de Estados",
+      "topDoctors": "Top Médicos por Carga de Trabalho",
+      "weeklyTrends": "Tendências Semanais",
+      "monthlyTrends": "Tendências Mensais"
+    },
+    "table": {
+      "doctorName": "Nome do Médico",
+      "specialty": "Especialidade",
+      "patients": "Pacientes",
+      "appointments": "Consultas",
+      "thisMonth": "Este Mês",
+      "acceptRate": "Taxa de Aceitação",
+      "rank": "Classificação"
+    }
+  },
+  "stats": {
+    "upcoming": "Próximas",
+    "activePrescriptions": "Receitas Ativas",
+    "labResults": "Resultados de Exames",
+    "activeConditions": "Condições Ativas",
+    "completed": "Concluídas",
+    "accepted": "Aceitas",
+    "declined": "Recusadas"
+  },
+  "landing": {
+    "hero": {
+      "title": "Sua Saúde, Nossa Prioridade",
+      "subtitle": "Experimente uma gestão de saúde integrada com o MediConnect",
+      "cta": "Começar Agora"
+    },
+    "features": {
+      "title": "Funcionalidades",
+      "appointments": "Consultas Fáceis",
+      "records": "Registros Digitais",
+      "telemedicine": "Telemedicina"
+    }
+  },
+  "languages": {
+    "en": "Inglês",
+    "pt": "Português"
+  },
+  "time": {
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "yesterday": "Ontem",
+    "thisWeek": "Esta Semana",
+    "lastWeek": "Semana Passada",
+    "thisMonth": "Este Mês",
+    "lastMonth": "Mês Passado",
+    "minutes": "minutos",
+    "hours": "horas",
+    "days": "dias"
+  }
+}

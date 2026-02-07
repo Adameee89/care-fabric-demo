@@ -1,0 +1,30 @@
+{
+  "common": { "appName": "MediConnect", "loading": "加载中...", "error": "错误", "success": "成功", "cancel": "取消", "confirm": "确认", "save": "保存", "delete": "删除", "edit": "编辑", "view": "查看", "search": "搜索", "filter": "筛选", "sort": "排序", "all": "全部", "none": "无", "yes": "是", "no": "否", "back": "返回", "next": "下一步", "previous": "上一步", "submit": "提交", "reset": "重置", "close": "关闭", "actions": "操作", "details": "详情", "status": "状态", "date": "日期", "time": "时间", "duration": "时长", "type": "类型", "notes": "备注", "reason": "原因", "patient": "患者", "doctor": "医生", "admin": "管理员", "logout": "退出", "login": "登录", "demoMode": "演示模式", "demoModeDesc": "这是一个使用模拟数据的演示。" },
+  "nav": { "home": "首页", "dashboard": "控制面板", "appointments": "预约", "patients": "患者", "doctors": "医生", "settings": "设置", "profile": "个人资料", "notifications": "通知" },
+  "auth": { "welcomeBack": "欢迎回来，{{name}}！", "helloDoctor": "您好，{{name}}医生", "adminDashboard": "管理员面板", "selectRole": "选择您的角色", "loginAsPatient": "以患者身份登录", "loginAsDoctor": "以医生身份登录", "loginAsAdmin": "以管理员身份登录", "mfaTitle": "双重验证", "mfaDescription": "请输入验证器应用中的6位数字代码", "enterCode": "输入验证码" },
+  "appointments": {
+    "title": "预约", "myAppointments": "我的预约", "appointmentInbox": "预约收件箱", "allAppointments": "预约总览", "bookAppointment": "预约挂号", "todayAppointments": "今日预约", "upcomingAppointments": "即将到来的预约", "pastAppointments": "过往预约", "pendingRequests": "待处理请求", "noAppointments": "未找到预约", "noUpcoming": "没有即将到来的预约", "noPending": "没有待处理的请求", "appointmentDetails": "预约详情", "patientInfo": "患者信息", "doctorInfo": "医生信息", "appointmentType": "预约类型", "requestedSlots": "请求的时段", "confirmedSlot": "已确认时段", "virtualAppointment": "线上预约", "inPersonAppointment": "线下预约",
+    "urgency": { "low": "低", "medium": "中", "high": "高" },
+    "status": { "Requested": "已申请", "PendingReview": "审核中", "Accepted": "已确认", "Declined": "已拒绝", "RescheduleProposed": "已提议改期", "RescheduleAccepted": "已改期", "RescheduleDeclined": "改期被拒", "CancelledByPatient": "已取消", "CancelledByDoctor": "医生已取消", "Completed": "已完成", "NoShow": "未到诊" },
+    "statusDesc": { "Requested": "等待医生审核", "PendingReview": "医生正在审核您的请求", "Accepted": "预约已确认", "Declined": "医生拒绝了此预约", "RescheduleProposed": "已提议新时间", "RescheduleAccepted": "预约已成功改期", "RescheduleDeclined": "改期提议被拒绝", "CancelledByPatient": "患者已取消", "CancelledByDoctor": "医生取消了此预约", "Completed": "预约已完成", "NoShow": "患者未到诊" },
+    "actions": { "accept": "接受", "decline": "拒绝", "reschedule": "改期", "cancel": "取消预约", "markCompleted": "标记为已完成", "markNoShow": "标记为未到诊", "viewReason": "查看原因", "viewSummary": "查看摘要", "acceptReschedule": "接受新时间", "declineReschedule": "拒绝提议", "proposeNewTime": "提议新时间" },
+    "decline": { "title": "拒绝预约", "selectReason": "选择原因", "reasons": { "NotAvailable": "在请求的时间不可用", "OutsideExpertise": "超出专业范围", "InsufficientInformation": "信息不足", "Other": "其他原因" }, "additionalNotes": "补充说明（可选）" },
+    "reschedule": { "title": "提议改期", "selectDate": "选择新日期", "selectTime": "选择新时间", "proposedBy": "提议人", "originalSlot": "原时段", "newSlot": "新提议时段" },
+    "types": { "Initial Consultation": "初诊", "Follow-up": "复诊", "Routine Checkup": "常规检查", "Emergency": "急诊", "Lab Review": "检验结果复查", "Prescription Refill": "续方", "Telemedicine": "远程医疗" },
+    "form": { "step1": "选择医生", "step2": "选择日期和时间", "step3": "审核并确认", "selectDoctor": "选择一位医生", "selectType": "选择预约类型", "selectDate": "选择首选日期", "selectTime": "选择时段", "reasonPlaceholder": "描述就诊原因...", "notesPlaceholder": "给医生的补充说明...", "virtualOption": "这是线上预约" }
+  },
+  "doctor": {
+    "dashboard": { "title": "医生面板", "overview": "概览", "schedule": "日程", "patients": "我的患者", "appointmentsToday": "今日预约", "upcomingThisWeek": "本周", "pastMonth": "近30天", "noShowRate": "爽约率", "avgPerDay": "日均", "pendingCount": "{{count}}个待处理请求", "healthOverview": "以下是您的日程概览。" },
+    "schedule": { "dailySchedule": "每日日程", "weeklyView": "每周视图", "noAppointmentsToday": "今天没有预约", "conflictWarning": "检测到日程冲突", "overbookWarning": "超额预约时段" },
+    "patient": { "viewProfile": "查看资料", "medicalHistory": "病历", "prescriptions": "处方", "labResults": "检验结果" }
+  },
+  "admin": {
+    "dashboard": { "title": "管理员面板", "overview": "系统概览", "analytics": "数据分析", "users": "用户", "systemStatus": "系统状态" },
+    "analytics": { "title": "数据分析面板", "doctorAnalytics": "医生分析", "patientAnalytics": "患者分析", "appointmentAnalytics": "预约分析", "totalDoctors": "医生总数", "totalPatients": "患者总数", "totalAppointments": "预约总数", "appointmentsThisMonth": "本月", "acceptedRate": "接受率", "declinedRate": "拒绝率", "noShowRate": "爽约率", "avgPerDay": "日均预约", "patientsPerDoctor": "每医生患者数", "appointmentsPerDoctor": "每医生预约数", "appointmentsPerPatient": "每患者预约数", "activePatients": "活跃患者", "inactivePatients": "不活跃患者", "statusDistribution": "状态分布", "topDoctors": "按工作量排名的医生", "weeklyTrends": "每周趋势", "monthlyTrends": "每月趋势" },
+    "table": { "doctorName": "医生姓名", "specialty": "专科", "patients": "患者", "appointments": "预约", "thisMonth": "本月", "acceptRate": "接受率", "rank": "排名" }
+  },
+  "stats": { "upcoming": "即将到来", "activePrescriptions": "有效处方", "labResults": "检验结果", "activeConditions": "活动病症", "completed": "已完成", "accepted": "已接受", "declined": "已拒绝" },
+  "landing": { "hero": { "title": "您的健康，我们的首要任务", "subtitle": "体验MediConnect带来的无缝健康管理", "cta": "立即开始" }, "features": { "title": "功能特点", "appointments": "便捷预约", "records": "数字病历", "telemedicine": "远程医疗" } },
+  "languages": { "en": "英语", "zh": "中文" },
+  "time": { "today": "今天", "tomorrow": "明天", "yesterday": "昨天", "thisWeek": "本周", "lastWeek": "上周", "thisMonth": "本月", "lastMonth": "上月", "minutes": "分钟", "hours": "小时", "days": "天" }
+}
